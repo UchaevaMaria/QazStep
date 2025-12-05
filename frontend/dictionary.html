@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Словарь казахского языка — QazStep</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .dictionary-page {
+            padding: 40px 0;
+            min-height: 80vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            color: var(--color-primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .page-header p {
+            color: var(--color-text);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .dictionary-controls {
+            margin: 40px auto;
+            max-width: 1000px;
+            padding: 0 20px;
+        }
+
+        .search-field {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-field input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid rgba(121, 135, 148, 0.2);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: all var(--transition-base);
+        }
+
+        .search-field input:focus {
+            border-color: var(--color-primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(40, 65, 109, 0.1);
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filter-chip {
+            padding: 10px 20px;
+            background: rgba(40, 65, 109, 0.1);
+            border: 2px solid transparent;
+            border-radius: 20px;
+            color: var(--color-primary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            font-size: 0.95rem;
+        }
+
+        .filter-chip:hover {
+            background: rgba(40, 65, 109, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .filter-chip.is-active {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .dictionary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px auto;
+            max-width: 1000px;
+            padding: 0 20px;
+        }
+
+        .word-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+            transition: all var(--transition-base);
+            border: 1px solid rgba(204, 182, 140, 0.2);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .word-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(40, 65, 109, 0.15);
+        }
+
+        .word-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .word-kazakh {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin: 0;
+        }
+
+        .word-russian {
+            font-size: 1.2rem;
+            color: var(--color-text);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .word-transcription {
+            color: var(--color-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .word-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(97, 139, 104, 0.1);
+            color: var(--color-success);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .word-example {
+            color: var(--color-text);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(40, 65, 109, 0.03);
+            border-radius: 10px;
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .word-example kaz {
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .word-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 15px;
+            border-top: 1px solid rgba(121, 135, 148, 0.1);
+        }
+
+        .audio-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(40, 65, 109, 0.1);
+            border: none;
+            color: var(--color-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-base);
+        }
+
+        .audio-btn:hover {
+            background: var(--color-primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .favorite-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(204, 182, 140, 0.1);
+            border: none;
+            color: var(--color-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-base);
+        }
+
+        .favorite-btn.active {
+            background: var(--color-secondary);
+            color: white;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 100px 20px;
+            color: var(--color-text);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: block;
+            color: var(--color-primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+            color: rgba(121, 135, 148, 0.3);
+        }
+
+        .empty-state h3 {
+            color: var(--color-primary);
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .empty-state p {
+            color: var(--color-text);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .alphabet-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 30px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .alphabet-letter {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(40, 65, 109, 0.1);
+            color: var(--color-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            text-decoration: none;
+        }
+
+        .alphabet-letter:hover,
+        .alphabet-letter.active {
+            background: var(--color-primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .word-difficulty {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .difficulty-a1 { background: rgba(40, 65, 109, 0.1); color: var(--color-primary); }
+        .difficulty-a2 { background: rgba(97, 139, 104, 0.1); color: var(--color-success); }
+        .difficulty-b1 { background: rgba(204, 182, 140, 0.1); color: var(--color-secondary); }
+        .difficulty-b2 { background: rgba(121, 135, 148, 0.1); color: var(--color-text); }
+
+        @media (max-width: 768px) {
+            .dictionary-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .word-card {
+                padding: 20px;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .filter-chips {
+                justify-content: center;
+            }
+
+            .search-field {
+                flex-direction: column;
+            }
+
+            .alphabet-nav {
+                gap: 5px;
+            }
+
+            .alphabet-letter {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .word-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Уведомления -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <header class="site-header">
+        <div class="container header__content">
+            <a class="logo" href="index.html">QazStep</a>
+            <nav class="primary-nav">
+                <ul class="nav-list">
+                    <li><a class="nav-link" href="lessons.html">Уроки</a></li>
+                    <li><a class="nav-link" href="theory.html">Теория</a></li>
+                    <li><a class="nav-link is-active" href="dictionary.html">Словарь</a></li>
+                    <li><a class="nav-link" href="admin-dashboard.html">Админ</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons" id="authButtons">
+                <!-- JS загрузит -->
+            </div>
+            <button class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="dictionary-page">
+        <!-- Заголовок -->
+        <div class="page-header">
+            <h1><i class="fa-solid fa-book"></i> Словарь казахского языка</h1>
+            <p>Изучайте слова по темам и уровням сложности. Добавляйте слова в избранное для быстрого доступа.</p>
+        </div>
+
+        <!-- Контролы -->
+        <div class="dictionary-controls">
+            <div class="search-field">
+                <input type="text" id="dictionarySearch" placeholder="Поиск слова на казахском или русском...">
+                <button class="btn btn--primary" onclick="searchWords()">
+                    <i class="fa-solid fa-search"></i> Поиск
+                </button>
+                <button class="btn btn--secondary" onclick="showAddWordModal()">
+                    <i class="fa-solid fa-plus"></i> Добавить слово
+                </button>
+            </div>
+
+            <!-- Алфавит -->
+            <div class="alphabet-nav" id="alphabetNav">
+                <!-- Алфавит загружается через JS -->
+            </div>
+
+            <div class="filter-chips" id="categoryFilters">
+                <button class="filter-chip is-active" data-category="all">Все категории</button>
+                <button class="filter-chip" data-category="greetings">Приветствия</button>
+                <button class="filter-chip" data-category="family">Семья</button>
+                <button class="filter-chip" data-category="food">Еда</button>
+                <button class="filter-chip" data-category="travel">Путешествия</button>
+                <button class="filter-chip" data-category="verbs">Глаголы</button>
+                <button class="filter-chip" data-category="adjectives">Прилагательные</button>
+                <button class="filter-chip" data-category="favorites" id="favoritesFilter">
+                    <i class="fa-solid fa-star"></i> Избранное
+                </button>
+            </div>
+        </div>
+
+        <!-- Сетка слов -->
+        <div class="dictionary-grid" id="dictionaryGrid">
+            <!-- Слова загружаются через JS -->
+            <div class="loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Загрузка словаря...</p>
+            </div>
+        </div>
+
+        <!-- Если нет слов -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fa-solid fa-book-open"></i>
+            <h3>Слова не найдены</h3>
+            <p>Попробуйте изменить параметры поиска или выберите другую категорию</p>
+            <button class="btn btn--primary" onclick="resetFilters()">
+                <i class="fa-solid fa-rotate-left"></i> Сбросить фильтры
+            </button>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer__inner">
+            <div class="footer__brand">
+                <a class="logo" href="index.html">QazStep</a>
+                <p>Шаг за шагом к свободному владению казахским языком.</p>
+                <div class="footer__socials">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#"><i class="fa-brands fa-telegram"></i></a>
+                </div>
+            </div>
+            <div class="footer__links">
+                <h4>Навигация</h4>
+                <ul>
+                    <li><a href="lessons.html">Уроки</a></li>
+                    <li><a href="theory.html">Теория</a></li>
+                    <li><a href="dictionary.html">Словарь</a></li>
+                    <li><a href="admin-dashboard.html">Админ-панель</a></li>
+                </ul>
+            </div>
+            <div class="footer__contacts">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><i class="fa-solid fa-envelope"></i> <a href="mailto:hello@qazstep.kz">hello@qazstep.kz</a></li>
+                    <li><i class="fa-solid fa-location-dot"></i> Казахстан</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <p>© 2024 QazStep. Шаг за шагом к знаниям.</p>
+        </div>
+    </footer>
+
+    <script>
+    // ====================
+    // API ДЛЯ РАБОТЫ С СЕРВЕРОМ
+    // ====================
+    const API_URL = 'http://localhost:3000/api';
+
+    class QazStepAPI {
+        // 📌 Проверка соединения
+        static async checkConnection() {
+            try {
+                const response = await fetch(`${API_URL}/status`);
+                return response.ok;
+            } catch {
+                return false;
+            }
+        }
+
+        // 📌 Словарь
+        static async getDictionary() {
+            try {
+                const response = await fetch(`${API_URL}/dictionary`);
+                if (!response.ok) throw new Error('Ошибка загрузки словаря');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки словаря:', error);
+                return JSON.parse(localStorage.getItem('qazstep_dictionary') || '[]');
+            }
+        }
+
+        static async saveWord(word) {
+            try {
+                const method = word.id ? 'PUT' : 'POST';
+                const url = word.id ? `${API_URL}/dictionary/${word.id}` : `${API_URL}/dictionary`;
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(word)
+                });
+
+                if (!response.ok) throw new Error('Ошибка сохранения слова');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка сохранения слова:', error);
+                // Сохраняем локально
+                const words = JSON.parse(localStorage.getItem('qazstep_dictionary') || '[]');
+                if (word.id) {
+                    const index = words.findIndex(w => w.id === word.id);
+                    if (index !== -1) {
+                        words[index] = word;
+                    }
+                } else {
+                    words.push(word);
+                }
+                localStorage.setItem('qazstep_dictionary', JSON.stringify(words));
+                return word;
+            }
+        }
+
+        static async deleteWord(id) {
+            try {
+                await fetch(`${API_URL}/dictionary/${id}`, { method: 'DELETE' });
+                return true;
+            } catch (error) {
+                console.error('Ошибка удаления слова:', error);
+                // Удаляем локально
+                const words = JSON.parse(localStorage.getItem('qazstep_dictionary') || '[]');
+                const filtered = words.filter(w => w.id !== id);
+                localStorage.setItem('qazstep_dictionary', JSON.stringify(filtered));
+                return true;
+            }
+        }
+
+        // 📌 Пользователи
+        static async getUsers() {
+            try {
+                const response = await fetch(`${API_URL}/users`);
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки пользователей:', error);
+                return JSON.parse(localStorage.getItem('qazstep_users') || '[]');
+            }
+        }
+
+        // 📌 История действий
+        static async addRecentAction(action, type = 'system') {
+            const actions = JSON.parse(localStorage.getItem('qazstep_recentActions') || '[]');
+            const user = JSON.parse(localStorage.getItem('qazstep_session'));
+
+            const newAction = {
+                id: Date.now(),
+                action: action,
+                type: type,
+                user: user ? user.name : 'system',
+                timestamp: new Date().toISOString(),
+                time: new Date().toLocaleTimeString('ru-RU')
+            };
+
+            actions.unshift(newAction);
+            if (actions.length > 50) {
+                actions.pop();
+            }
+
+            localStorage.setItem('qazstep_recentActions', JSON.stringify(actions));
+            return newAction;
+        }
+
+        // 📌 Избранные слова
+        static async getUserFavorites() {
+            const user = JSON.parse(localStorage.getItem('qazstep_session'));
+            if (!user) return [];
+
+            try {
+                const response = await fetch(`${API_URL}/users/${user.id}/favorites`);
+                if (!response.ok) throw new Error('Ошибка загрузки избранного');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки избранного:', error);
+                return JSON.parse(localStorage.getItem('qazstep_user_favorites') || '[]');
+            }
+        }
+
+        static async toggleFavorite(wordId) {
+            const user = JSON.parse(localStorage.getItem('qazstep_session'));
+            if (!user) return { success: false, error: 'Требуется авторизация' };
+
+            try {
+                const response = await fetch(`${API_URL}/users/${user.id}/favorites/${wordId}`, {
+                    method: 'POST'
+                });
+
+                if (!response.ok) throw new Error('Ошибка обновления избранного');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка обновления избранного:', error);
+                // Работаем локально
+                let userFavorites = JSON.parse(localStorage.getItem('qazstep_user_favorites') || '[]');
+
+                if (userFavorites.includes(wordId)) {
+                    userFavorites = userFavorites.filter(id => id !== wordId);
+                } else {
+                    userFavorites.push(wordId);
+                }
+
+                localStorage.setItem('qazstep_user_favorites', JSON.stringify(userFavorites));
+                return { success: true, favorites: userFavorites };
+            }
+        }
+    }
+
+    // ====================
+    // ОСНОВНОЙ СКРИПТ ДЛЯ СЛОВАРЯ
+    // ====================
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        console.log("Страница словаря загружена");
+
+        // Инициализация
+        await initDatabase();
+        updateAuthUI();
+        setupHamburgerMenu();
+
+        // Загрузка словаря
+        await loadDictionary();
+        setupAlphabet();
+        setupCategoryFilters();
+
+        // Добавляем обработчик для поля поиска
+        const searchInput = document.getElementById('dictionarySearch');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    searchWords();
+                }
+            });
+        }
+    });
+
+    async function initDatabase() {
+        console.log("Инициализация базы данных словаря...");
+
+        try {
+            // Проверяем соединение с сервером
+            const isConnected = await QazStepAPI.checkConnection();
+            console.log("Соединение с сервером:", isConnected ? "✓ Установлено" : "✗ Нет связи");
+
+            if (isConnected) {
+                // Загружаем данные с сервера
+                const [users, dictionary] = await Promise.all([
+                    QazStepAPI.getUsers(),
+                    QazStepAPI.getDictionary()
+                ]);
+
+                // Сохраняем в localStorage как кэш
+                localStorage.setItem('qazstep_users', JSON.stringify(users));
+                localStorage.setItem('qazstep_dictionary', JSON.stringify(dictionary));
+
+                console.log(`Загружено с сервера: ${users.length} пользователей, ${dictionary.length} слов`);
+            } else {
+                console.log('Работаем в автономном режиме (localStorage)');
+                initLocalStorage();
+            }
+        } catch (error) {
+            console.error('Ошибка при загрузке с сервера:', error);
+            initLocalStorage();
+        }
+    }
+
+    function initLocalStorage() {
+        // Если нет пользователей - инициализируем пустой массив
+        if (!localStorage.getItem('qazstep_users')) {
+            console.log("Инициализируем базу пользователей");
+            localStorage.setItem('qazstep_users', JSON.stringify([]));
+        }
+
+        // Если нет словаря - создаем демо слова
+        if (!localStorage.getItem('qazstep_dictionary')) {
+            console.log("Создаем демо словарь");
+            const words = [
+                {
+                    id: 1,
+                    kazakh: "Сәлем",
+                    russian: "Привет",
+                    transcription: "Сэлэм",
+                    category: "greetings",
+                    level: "A1",
+                    exampleKazakh: "Сәлем, қалайсыз?",
+                    exampleRussian: "Привет, как дела?",
+                    createdAt: new Date().toISOString(),
+                    audioUrl: null
+                },
+                {
+                    id: 2,
+                    kazakh: "Рақмет",
+                    russian: "Спасибо",
+                    transcription: "Рахмет",
+                    category: "greetings",
+                    level: "A1",
+                    exampleKazakh: "Рақмет сізге!",
+                    exampleRussian: "Спасибо вам!",
+                    createdAt: new Date().toISOString(),
+                    audioUrl: null
+                },
+                {
+                    id: 3,
+                    kazakh: "Қалайсыз",
+                    russian: "Как дела?",
+                    transcription: "Калайсыз",
+                    category: "greetings",
+                    level: "A1",
+                    exampleKazakh: "Қалайсыз, жақсымысыз?",
+                    exampleRussian: "Как дела, у вас всё хорошо?",
+                    createdAt: new Date().toISOString(),
+                    audioUrl: null
+                },
+                {
+                    id: 4,
+                    kazakh: "Ана",
+                    russian: "Мама",
+                    transcription: "Ана",
+                    category: "family",
+                    level: "A1",
+                    exampleKazakh: "Менің анам мұғалім.",
+                    exampleRussian: "Моя мама учитель.",
+                    createdAt: new Date().toISOString(),
+                    audioUrl: null
+                },
+                {
+                    id: 5,
+                    kazakh: "Әке",
+                    russian: "Папа",
+                    transcription: "Эке",
+                    category: "family",
+                    level: "A1",
+                    exampleKazakh: "Менің әкем дәрігер.",
+                    exampleRussian: "Мой папа врач.",
+                    createdAt: new Date().toISOString(),
+                    audioUrl: null
+                }
+            ];
+            localStorage.setItem('qazstep_dictionary', JSON.stringify(words));
+        }
+
+        // Если нет избранных слов пользователя
+        if (!localStorage.getItem('qazstep_user_favorites')) {
+            localStorage.setItem('qazstep_user_favorites', JSON.stringify([]));
+        }
+
+        // Если нет действий - инициализируем
+        if (!localStorage.getItem('qazstep_recentActions')) {
+            localStorage.setItem('qazstep_recentActions', JSON.stringify([]));
+        }
+    }
+
+    // Функция обновления UI авторизации
+    function updateAuthUI() {
+        const authButtons = document.getElementById('authButtons');
+        if (!authButtons) return;
+
+        const session = localStorage.getItem('qazstep_session');
+        let user = null;
+
+        if (session) {
+            try {
+                user = JSON.parse(session);
+            } catch (e) {
+                console.error("Ошибка при парсинге сессии:", e);
+            }
+        }
+
+        if (user) {
+            authButtons.innerHTML = `
+                <div class="user-menu">
+                    <span class="user-greeting">
+                        <i class="fa-solid fa-user"></i>
+                        ${user.name}
+                    </span>
+                    <button onclick="logout()" class="btn btn--small btn--secondary">
+                        Выйти
+                    </button>
+                </div>
+            `;
+        } else {
+            authButtons.innerHTML = `
+                <div class="auth-buttons">
+                    <a href="login.html" class="btn btn--secondary btn--small">
+                        Вход
+                    </a>
+                    <a href="register.html" class="btn btn--primary btn--small">
+                        Регистрация
+                    </a>
+                </div>
+            `;
+        }
+    }
+
+    // Функция выхода
+    async function logout() {
+        const session = localStorage.getItem('qazstep_session');
+        let user = null;
+
+        if (session) {
+            try {
+                user = JSON.parse(session);
+            } catch (e) {
+                console.error("Ошибка при парсинге сессии:", e);
+            }
+        }
+
+        if (user) {
+            await QazStepAPI.addRecentAction(`Пользователь ${user.name} вышел из системы`, 'user');
+        }
+        localStorage.removeItem('qazstep_session');
+        showNotification('Вы вышли из системы', 'success');
+        setTimeout(() => {
+            updateAuthUI();
+            window.location.href = 'index.html';
+        }, 1000);
+    }
+
+    // Инициализация меню
+    function setupHamburgerMenu() {
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('.primary-nav');
+
+        if (hamburger && nav) {
+            hamburger.addEventListener('click', () => {
+                nav.classList.toggle('show');
+                hamburger.classList.toggle('is-active');
+            });
+
+            // Закрытие меню при клике на ссылку
+            nav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    nav.classList.remove('show');
+                    hamburger.classList.remove('is-active');
+                });
+            });
+        }
+    }
+
+    async function loadDictionary() {
+        try {
+            const words = await QazStepAPI.getDictionary();
+            await displayWords(words);
+        } catch (error) {
+            console.error('Ошибка загрузки словаря:', error);
+            showNotification('Ошибка загрузки словаря', 'error');
+        }
+    }
+
+    async function displayWords(words) {
+        const container = document.getElementById('dictionaryGrid');
+        const emptyState = document.getElementById('emptyState');
+
+        if (!container) return;
+
+        if (!words || words.length === 0) {
+            container.style.display = 'none';
+            if (emptyState) emptyState.style.display = 'block';
+            return;
+        }
+
+        container.style.display = 'grid';
+        if (emptyState) emptyState.style.display = 'none';
+
+        // Получаем активную категорию
+        const activeCategory = document.querySelector('.filter-chip.is-active')?.dataset.category || 'all';
+
+        // Получаем активную букву
+        const activeLetter = document.querySelector('.alphabet-letter.active')?.textContent;
+
+        // Фильтруем слова
+        let filteredWords = words;
+
+        // Фильтр по категории
+        if (activeCategory !== 'all') {
+            if (activeCategory === 'favorites') {
+                // Получаем избранные слова пользователя
+                const userFavorites = await QazStepAPI.getUserFavorites();
+                filteredWords = words.filter(word => userFavorites.includes(word.id));
+            } else {
+                filteredWords = words.filter(word => word.category === activeCategory);
+            }
+        }
+
+        // Фильтр по букве
+        if (activeLetter && activeLetter !== 'Все') {
+            filteredWords = filteredWords.filter(word =>
+                word.kazakh.charAt(0).toUpperCase() === activeLetter
+            );
+        }
+
+        // Поиск
+        const searchTerm = document.getElementById('dictionarySearch').value.toLowerCase();
+        if (searchTerm) {
+            filteredWords = filteredWords.filter(word =>
+                word.kazakh.toLowerCase().includes(searchTerm) ||
+                word.russian.toLowerCase().includes(searchTerm) ||
+                (word.transcription && word.transcription.toLowerCase().includes(searchTerm))
+            );
+        }
+
+        if (filteredWords.length === 0) {
+            container.style.display = 'none';
+            if (emptyState) emptyState.style.display = 'block';
+            return;
+        }
+
+        // Получаем избранные слова пользователя
+        const userFavorites = await QazStepAPI.getUserFavorites();
+
+        container.innerHTML = '';
+
+        filteredWords.forEach(word => {
+            const isFavorite = userFavorites.includes(word.id);
+
+            const card = document.createElement('div');
+            card.className = 'word-card';
+            card.innerHTML = `
+                <div class="word-header">
+                    <div>
+                        <h3 class="word-kazakh">${word.kazakh}</h3>
+                        <p class="word-russian">${word.russian}</p>
+                        ${word.transcription ? `<p class="word-transcription">[${word.transcription}]</p>` : ''}
+                    </div>
+                    <span class="word-difficulty difficulty-${word.level.toLowerCase()}">${word.level}</span>
+                </div>
+
+                <span class="word-category">${getCategoryName(word.category)}</span>
+
+                ${word.exampleKazakh ? `
+                    <div class="word-example">
+                        <p><kaz>${word.exampleKazakh}</kaz></p>
+                        ${word.exampleRussian ? `
+                            <p style="margin-top: 5px; font-size: 0.9em; color: #666;">${word.exampleRussian}</p>
+                        ` : ''}
+                    </div>
+                ` : ''}
+
+                <div class="word-actions">
+                    ${word.audioUrl ? `
+                        <button class="audio-btn" onclick="playAudio('${word.audioUrl}')">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                    ` : `
+                        <button class="audio-btn" onclick="speakWord('${word.kazakh}')">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                    `}
+
+                    <button class="favorite-btn ${isFavorite ? 'active' : ''}"
+                            onclick="toggleFavorite(${word.id}, this)">
+                        <i class="fa-solid ${isFavorite ? 'fa-star' : 'fa-star'}"></i>
+                    </button>
+
+                    ${isAdmin() ? `
+                        <button class="btn btn--small" onclick="editWord(${word.id})" style="margin-left: auto;">
+                            <i class="fa-solid fa-edit"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function setupAlphabet() {
+        const alphabetNav = document.getElementById('alphabetNav');
+        if (!alphabetNav) return;
+
+        // Казахский алфавит (кириллица)
+        const kazakhAlphabet = ['Ә', 'Б', 'В', 'Г', 'Ғ', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Қ', 'Л',
+                               'М', 'Н', 'Ң', 'О', 'Ө', 'П', 'Р', 'С', 'Т', 'У', 'Ұ', 'Ү', 'Ф', 'Х', 'Һ',
+                               'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'І', 'Ь', 'Э', 'Ю', 'Я'];
+
+        // Также добавляем часто используемые русские буквы
+        const russianLetters = ['А', 'С', 'М', 'К', 'Ж', 'Р', 'Т', 'Д', 'Б', 'Н', 'Л', 'П', 'З'];
+
+        // Объединяем и сортируем уникальные буквы
+        const allLetters = [...new Set([...kazakhAlphabet, ...russianLetters])].sort();
+
+        let html = '<a href="#" class="alphabet-letter active" data-letter="all">Все</a>';
+
+        allLetters.forEach(letter => {
+            html += `<a href="#" class="alphabet-letter" data-letter="${letter}">${letter}</a>`;
+        });
+
+        alphabetNav.innerHTML = html;
+
+        // Добавляем обработчики кликов
+        alphabetNav.querySelectorAll('.alphabet-letter').forEach(letter => {
+            letter.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Убираем активный класс у всех букв
+                alphabetNav.querySelectorAll('.alphabet-letter').forEach(l =>
+                    l.classList.remove('active')
+                );
+
+                // Добавляем активный класс текущей букве
+                this.classList.add('active');
+
+                // Загружаем слова
+                loadDictionary();
+            });
+        });
+    }
+
+    function setupCategoryFilters() {
+        const filterChips = document.querySelectorAll('.filter-chip');
+        filterChips.forEach(chip => {
+            chip.addEventListener('click', function() {
+                // Убираем активный класс у всех
+                filterChips.forEach(c => c.classList.remove('is-active'));
+                // Добавляем активный класс текущему
+                this.classList.add('is-active');
+                // Загружаем слова
+                loadDictionary();
+            });
+        });
+    }
+
+    function searchWords() {
+        loadDictionary();
+    }
+
+    function resetFilters() {
+        document.getElementById('dictionarySearch').value = '';
+
+        // Сбрасываем фильтры категорий
+        const filterChips = document.querySelectorAll('.filter-chip');
+        filterChips.forEach(chip => chip.classList.remove('is-active'));
+        filterChips[0].classList.add('is-active'); // "Все категории"
+
+        // Сбрасываем алфавит
+        const alphabetNav = document.getElementById('alphabetNav');
+        if (alphabetNav) {
+            alphabetNav.querySelectorAll('.alphabet-letter').forEach(letter =>
+                letter.classList.remove('active')
+            );
+            alphabetNav.querySelector('.alphabet-letter[data-letter="all"]').classList.add('active');
+        }
+
+        loadDictionary();
+    }
+
+    function getCategoryName(category) {
+        const categories = {
+            'greetings': 'Приветствия',
+            'family': 'Семья',
+            'food': 'Еда',
+            'travel': 'Путешествия',
+            'verbs': 'Глаголы',
+            'adjectives': 'Прилагательные',
+            'nouns': 'Существительные',
+            'numbers': 'Числа',
+            'time': 'Время',
+            'colors': 'Цвета',
+            'animals': 'Животные',
+            'clothes': 'Одежда',
+            'house': 'Дом',
+            'work': 'Работа',
+            'health': 'Здоровье'
+        };
+        return categories[category] || category;
+    }
+
+    function speakWord(text) {
+        // Используем Web Speech API для произношения
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'kk-KZ'; // Казахский язык
+            utterance.rate = 0.8; // Скорость речи
+
+            // Пробуем найти казахский голос
+            const voices = speechSynthesis.getVoices();
+            const kazakhVoice = voices.find(voice =>
+                voice.lang === 'kk-KZ' || voice.lang.startsWith('kk')
+            );
+
+            if (kazakhVoice) {
+                utterance.voice = kazakhVoice;
+            }
+
+            speechSynthesis.speak(utterance);
+        } else {
+            showNotification('Ваш браузер не поддерживает озвучку текста', 'error');
+        }
+    }
+
+    async function toggleFavorite(wordId, button) {
+        const user = JSON.parse(localStorage.getItem('qazstep_session'));
+
+        if (!user) {
+            showNotification('Войдите в систему, чтобы добавлять слова в избранное', 'warning');
+            return;
+        }
+
+        try {
+            const result = await QazStepAPI.toggleFavorite(wordId);
+
+            if (result.success) {
+                const isFavorite = button.classList.contains('active');
+
+                if (isFavorite) {
+                    button.classList.remove('active');
+                    showNotification('Слово удалено из избранного', 'success');
+
+                    // Добавляем действие в историю
+                    await QazStepAPI.addRecentAction(`Пользователь ${user.name} удалил слово из избранного`, 'dictionary');
+                } else {
+                    button.classList.add('active');
+                    showNotification('Слово добавлено в избранное!', 'success');
+
+                    // Добавляем действие в историю
+                    await QazStepAPI.addRecentAction(`Пользователь ${user.name} добавил слово в избранное`, 'dictionary');
+                }
+            } else {
+                showNotification(result.error || 'Ошибка обновления избранного', 'error');
+            }
+        } catch (error) {
+            console.error('Ошибка обновления избранного:', error);
+            showNotification('Ошибка обновления избранного', 'error');
+        }
+    }
+
+    function isAdmin() {
+        const session = localStorage.getItem('qazstep_session');
+        if (!session) return false;
+
+        try {
+            const user = JSON.parse(session);
+            return user.role === 'admin';
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function showAddWordModal() {
+        if (!isAdmin()) {
+            showNotification('Только администратор может добавлять слова', 'error');
+            return;
+        }
+
+        const modalHTML = `
+            <div class="modal active" id="addWordModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-plus"></i> Добавить новое слово</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addWordForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="wordKazakh">Слово на казахском *</label>
+                                    <input type="text" id="wordKazakh" required
+                                           placeholder="Например: Сәлем">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="wordRussian">Перевод на русский *</label>
+                                    <input type="text" id="wordRussian" required
+                                           placeholder="Например: Привет">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="wordTranscription">Транскрипция</label>
+                                    <input type="text" id="wordTranscription"
+                                           placeholder="Например: Сэлэм">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="wordCategory">Категория *</label>
+                                    <select id="wordCategory" required>
+                                        <option value="">Выберите категорию</option>
+                                        <option value="greetings">Приветствия</option>
+                                        <option value="family">Семья</option>
+                                        <option value="food">Еда</option>
+                                        <option value="travel">Путешествия</option>
+                                        <option value="verbs">Глаголы</option>
+                                        <option value="adjectives">Прилагательные</option>
+                                        <option value="nouns">Существительные</option>
+                                        <option value="numbers">Числа</option>
+                                        <option value="time">Время</option>
+                                        <option value="colors">Цвета</option>
+                                        <option value="animals">Животные</option>
+                                        <option value="clothes">Одежда</option>
+                                        <option value="house">Дом</option>
+                                        <option value="work">Работа</option>
+                                        <option value="health">Здоровье</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="wordLevel">Уровень сложности *</label>
+                                    <select id="wordLevel" required>
+                                        <option value="A1">A1 (Начальный)</option>
+                                        <option value="A2">A2 (Элементарный)</option>
+                                        <option value="B1">B1 (Средний)</option>
+                                        <option value="B2">B2 (Выше среднего)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="wordExampleKazakh">Пример на казахском</label>
+                                <textarea id="wordExampleKazakh" rows="2"
+                                          placeholder="Например: Сәлем, қалайсыз?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="wordExampleRussian">Перевод примера</label>
+                                <textarea id="wordExampleRussian" rows="2"
+                                          placeholder="Например: Привет, как дела?"></textarea>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn--secondary"
+                                        onclick="closeModal('addWordModal')">Отмена</button>
+                                <button type="submit" class="btn btn--primary">
+                                    <i class="fa-solid fa-save"></i> Сохранить слово
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        document.getElementById('addWordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const newWord = {
+                kazakh: document.getElementById('wordKazakh').value.trim(),
+                russian: document.getElementById('wordRussian').value.trim(),
+                transcription: document.getElementById('wordTranscription').value.trim(),
+                category: document.getElementById('wordCategory').value,
+                level: document.getElementById('wordLevel').value,
+                exampleKazakh: document.getElementById('wordExampleKazakh').value.trim(),
+                exampleRussian: document.getElementById('wordExampleRussian').value.trim(),
+                audioUrl: null
+            };
+
+            // Валидация
+            if (!newWord.kazakh || !newWord.russian || !newWord.category || !newWord.level) {
+                showNotification('Заполните обязательные поля', 'error');
+                return;
+            }
+
+            try {
+                const savedWord = await QazStepAPI.saveWord(newWord);
+
+                const user = JSON.parse(localStorage.getItem('qazstep_session'));
+                await QazStepAPI.addRecentAction(`Администратор ${user.name} добавил слово: "${newWord.kazakh}"`, 'dictionary');
+
+                showNotification('Слово успешно добавлено!', 'success');
+                closeModal('addWordModal');
+                await loadDictionary();
+            } catch (error) {
+                console.error('Ошибка добавления слова:', error);
+                showNotification('Ошибка добавления слова', 'error');
+            }
+        });
+
+        initModalClose('addWordModal');
+    }
+
+    async function editWord(wordId) {
+        if (!isAdmin()) {
+            showNotification('Только администратор может редактировать слова', 'error');
+            return;
+        }
+
+        try {
+            const words = await QazStepAPI.getDictionary();
+            const word = words.find(w => w.id === wordId);
+
+            if (!word) {
+                showNotification('Слово не найдено', 'error');
+                return;
+            }
+
+            const modalHTML = `
+                <div class="modal active" id="editWordModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3><i class="fa-solid fa-edit"></i> Редактировать слово</h3>
+                            <button class="close-modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editWordForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="editWordKazakh">Слово на казахском *</label>
+                                        <input type="text" id="editWordKazakh" required
+                                               value="${word.kazakh}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="editWordRussian">Перевод на русский *</label>
+                                        <input type="text" id="editWordRussian" required
+                                               value="${word.russian}">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="editWordTranscription">Транскрипция</label>
+                                        <input type="text" id="editWordTranscription"
+                                               value="${word.transcription || ''}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="editWordCategory">Категория *</label>
+                                        <select id="editWordCategory" required>
+                                            <option value="">Выберите категорию</option>
+                                            ${generateCategoryOptions(word.category)}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="editWordLevel">Уровень сложности *</label>
+                                        <select id="editWordLevel" required>
+                                            ${generateLevelOptions(word.level)}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="editWordExampleKazakh">Пример на казахском</label>
+                                    <textarea id="editWordExampleKazakh" rows="2">${word.exampleKazakh || ''}</textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="editWordExampleRussian">Перевод примера</label>
+                                    <textarea id="editWordExampleRussian" rows="2">${word.exampleRussian || ''}</textarea>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn--secondary"
+                                            onclick="closeModal('editWordModal')">Отмена</button>
+                                    <button type="submit" class="btn btn--primary">Сохранить изменения</button>
+                                    <button type="button" class="btn btn--delete"
+                                            onclick="deleteWord(${wordId})">Удалить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+            document.getElementById('editWordForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const updatedWord = {
+                    ...word,
+                    kazakh: document.getElementById('editWordKazakh').value.trim(),
+                    russian: document.getElementById('editWordRussian').value.trim(),
+                    transcription: document.getElementById('editWordTranscription').value.trim(),
+                    category: document.getElementById('editWordCategory').value,
+                    level: document.getElementById('editWordLevel').value,
+                    exampleKazakh: document.getElementById('editWordExampleKazakh').value.trim(),
+                    exampleRussian: document.getElementById('editWordExampleRussian').value.trim(),
+                    updatedAt: new Date().toISOString()
+                };
+
+                try {
+                    await QazStepAPI.saveWord(updatedWord);
+
+                    const user = JSON.parse(localStorage.getItem('qazstep_session'));
+                    await QazStepAPI.addRecentAction(`Администратор ${user.name} отредактировал слово: "${updatedWord.kazakh}"`, 'dictionary');
+
+                    showNotification('Слово успешно обновлено!', 'success');
+                    closeModal('editWordModal');
+                    await loadDictionary();
+                } catch (error) {
+                    console.error('Ошибка обновления слова:', error);
+                    showNotification('Ошибка обновления слова', 'error');
+                }
+            });
+
+            initModalClose('editWordModal');
+        } catch (error) {
+            console.error('Ошибка загрузки слова:', error);
+            showNotification('Ошибка загрузки слова', 'error');
+        }
+    }
+
+    function generateCategoryOptions(selectedCategory) {
+        const categories = {
+            'greetings': 'Приветствия',
+            'family': 'Семья',
+            'food': 'Еда',
+            'travel': 'Путешествия',
+            'verbs': 'Глаголы',
+            'adjectives': 'Прилагательные',
+            'nouns': 'Существительные',
+            'numbers': 'Числа',
+            'time': 'Время',
+            'colors': 'Цвета',
+            'animals': 'Животные',
+            'clothes': 'Одежда',
+            'house': 'Дом',
+            'work': 'Работа',
+            'health': 'Здоровье'
+        };
+
+        let options = '';
+        for (const [value, label] of Object.entries(categories)) {
+            const selected = value === selectedCategory ? 'selected' : '';
+            options += `<option value="${value}" ${selected}>${label}</option>`;
+        }
+        return options;
+    }
+
+    function generateLevelOptions(selectedLevel) {
+        const levels = [
+            { value: 'A1', label: 'A1 (Начальный)' },
+            { value: 'A2', label: 'A2 (Элементарный)' },
+            { value: 'B1', label: 'B1 (Средний)' },
+            { value: 'B2', label: 'B2 (Выше среднего)' }
+        ];
+
+        let options = '';
+        levels.forEach(level => {
+            const selected = level.value === selectedLevel ? 'selected' : '';
+            options += `<option value="${level.value}" ${selected}>${level.label}</option>`;
+        });
+        return options;
+    }
+
+    async function deleteWord(wordId) {
+        if (!confirm('Вы уверены, что хотите удалить это слово?')) {
+            return;
+        }
+
+        if (!isAdmin()) {
+            showNotification('Только администратор может удалять слова', 'error');
+            return;
+        }
+
+        try {
+            await QazStepAPI.deleteWord(wordId);
+
+            const user = JSON.parse(localStorage.getItem('qazstep_session'));
+            await QazStepAPI.addRecentAction(`Администратор ${user.name} удалил слово из словаря`, 'dictionary');
+
+            showNotification('Слово успешно удалено!', 'success');
+            closeModal('editWordModal');
+            await loadDictionary();
+        } catch (error) {
+            console.error('Ошибка удаления слова:', error);
+            showNotification('Ошибка удаления слова', 'error');
+        }
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    function initModalClose(modalId) {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+
+        const closeBtn = modal.querySelector('.close-modal');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                closeModal(modalId);
+            });
+        }
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal(modalId);
+            }
+        });
+    }
+
+    function showNotification(message, type = 'info') {
+        const container = document.getElementById('notificationContainer');
+        if (!container) return;
+
+        // Удаляем старые уведомления
+        const oldNotifications = container.querySelectorAll('.notification');
+        oldNotifications.forEach(n => n.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+
+        let iconClass = 'fa-info-circle';
+        if (type === 'success') iconClass = 'fa-check-circle';
+        if (type === 'error') iconClass = 'fa-exclamation-circle';
+        if (type === 'warning') iconClass = 'fa-exclamation-triangle';
+
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${iconClass}"></i>
+                <span>${message}</span>
+            </div>
+            <button class="notification-close">&times;</button>
+        `;
+
+        container.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        });
+    }
+
+    // Глобальные функции
+    window.searchWords = searchWords;
+    window.resetFilters = resetFilters;
+    window.showAddWordModal = showAddWordModal;
+    window.toggleFavorite = toggleFavorite;
+    window.speakWord = speakWord;
+    window.editWord = editWord;
+    window.deleteWord = deleteWord;
+    window.closeModal = closeModal;
+    window.logout = logout;
+    </script>
+</body>
+</html>

@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Теория казахского языка — QazStep</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Ваши существующие стили остаются без изменений */
+        .theory-page {
+            padding: 40px 0;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            color: var(--color-primary);
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: var(--color-text);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .filters-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 20px 15px 50px;
+            border: 2px solid rgba(121, 135, 148, 0.2);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            transition: all var(--transition-base);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(40, 65, 109, 0.1);
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .filter-chip {
+            padding: 10px 20px;
+            background: rgba(121, 135, 148, 0.1);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            border: 2px solid transparent;
+        }
+
+        .filter-chip:hover {
+            background: rgba(40, 65, 109, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .filter-chip.is-active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .reset-btn {
+            margin-top: 10px;
+            color: var(--color-primary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color var(--transition-base);
+        }
+
+        .reset-btn:hover {
+            color: var(--color-secondary);
+            text-decoration: underline;
+        }
+
+        .theory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .theory-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+            transition: all var(--transition-base);
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .theory-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(40, 65, 109, 0.15);
+            border-color: rgba(40, 65, 109, 0.1);
+        }
+
+        .theory-card__icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(40, 65, 109, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .theory-card__icon i {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            background: rgba(40, 65, 109, 0.1);
+            color: var(--color-primary);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .level-a1 {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .level-a2 {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        .level-b1 {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        .level-b2 {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .theory-card h3 {
+            color: var(--color-primary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .theory-card__preview {
+            color: var(--color-text);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .theory-card__meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(121, 135, 148, 0.1);
+        }
+
+        .media-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(97, 139, 104, 0.1);
+            color: var(--color-success);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--color-text);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+            color: rgba(121, 135, 148, 0.3);
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.fade-out {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.fade-out .modal-content {
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid rgba(121, 135, 148, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--color-text);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all var(--transition-base);
+        }
+
+        .close-modal:hover {
+            background: rgba(121, 135, 148, 0.1);
+            color: var(--color-primary);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-footer {
+            padding: 25px;
+            border-top: 1px solid rgba(121, 135, 148, 0.1);
+            text-align: right;
+        }
+
+        .theory-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .theory-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--color-text);
+            font-size: 0.9rem;
+        }
+
+        .theory-content {
+            line-height: 1.6;
+            color: var(--color-text);
+        }
+
+        .theory-content h1,
+        .theory-content h2,
+        .theory-content h3 {
+            color: var(--color-primary);
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+        }
+
+        .theory-content p {
+            margin-bottom: 1em;
+        }
+
+        .theory-content ul,
+        .theory-content ol {
+            margin-left: 20px;
+            margin-bottom: 1em;
+        }
+
+        .theory-content li {
+            margin-bottom: 0.5em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .theory-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                justify-content: center;
+            }
+
+            .theory-card {
+                padding: 20px;
+            }
+
+            .modal-content {
+                max-height: 95vh;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Уведомления -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <header class="site-header">
+        <div class="container header__content">
+            <a class="logo" href="index.html">QazStep</a>
+            <nav class="primary-nav">
+                <ul class="nav-list">
+                    <li><a class="nav-link" href="lessons.html">Уроки</a></li>
+                    <li><a class="nav-link is-active" href="theory.html">Теория</a></li>
+                    <li><a class="nav-link" href="admin-dashboard.html">Админ</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons" id="authButtons">
+                <!-- JS загрузит -->
+            </div>
+            <button class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="theory-page">
+        <div class="container">
+            <!-- Заголовок -->
+            <div class="page-header">
+                <h1><i class="fa-solid fa-book"></i> Теория казахского языка</h1>
+                <p>Изучайте грамматику, лексику и культурные особенности. Используйте фильтры для поиска нужных материалов.</p>
+            </div>
+
+            <!-- Фильтры и поиск -->
+            <div class="filters-section">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="theorySearch" placeholder="Поиск по теории..." oninput="searchTheories()">
+                </div>
+
+                <div class="filters">
+                    <div class="filter-chip is-active" data-level="all" onclick="filterTheories('all')">Все уровни</div>
+                    <div class="filter-chip" data-level="A1" onclick="filterTheories('A1')">A1 (Начальный)</div>
+                    <div class="filter-chip" data-level="A2" onclick="filterTheories('A2')">A2 (Элементарный)</div>
+                    <div class="filter-chip" data-level="B1" onclick="filterTheories('B1')">B1 (Средний)</div>
+                    <div class="filter-chip" data-level="B2" onclick="filterTheories('B2')">B2 (Выше среднего)</div>
+                </div>
+
+                <div class="reset-btn" onclick="resetFilters()">
+                    <i class="fa-solid fa-rotate-left"></i> Сбросить фильтры
+                </div>
+            </div>
+
+            <!-- Сетка с теориями -->
+            <div class="theory-grid" id="theoryGrid">
+                <!-- Теории загружаются через JS -->
+                <div class="loading" style="text-align: center; padding: 60px 20px; grid-column: 1 / -1;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--color-primary);"></i>
+                    <p>Загрузка теорий...</p>
+                </div>
+            </div>
+
+            <!-- Состояние пустого результата -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fa-solid fa-book-open"></i>
+                <p>Теории не найдены</p>
+                <p style="color: var(--color-text);">Попробуйте изменить параметры поиска или фильтры</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer__inner">
+            <div class="footer__brand">
+                <a class="logo" href="index.html">QazStep</a>
+                <p>Шаг за шагом к свободному владению казахским языком.</p>
+                <div class="footer__socials">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#"><i class="fa-brands fa-telegram"></i></a>
+                </div>
+            </div>
+            <div class="footer__links">
+                <h4>Навигация</h4>
+                <ul>
+                    <li><a href="lessons.html">Уроки</a></li>
+                    <li><a href="theory.html">Теория</a></li>
+                    <li><a href="admin-dashboard.html">Админ-панель</a></li>
+                </ul>
+            </div>
+            <div class="footer__contacts">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><i class="fa-solid fa-envelope"></i> <a href="mailto:hello@qazstep.kz">hello@qazstep.kz</a></li>
+                    <li><i class="fa-solid fa-location-dot"></i> Казахстан</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <p>© 2024 QazStep. Шаг за шагом к знаниям.</p>
+        </div>
+    </footer>
+
+    <script>
+    // ====================
+    // API ДЛЯ РАБОТЫ С СЕРВЕРОМ
+    // ====================
+    const API_URL = 'http://localhost:3000/api';
+
+    class QazStepAPI {
+        // 📌 Проверка соединения
+        static async checkConnection() {
+            try {
+                const response = await fetch(`${API_URL}/status`);
+                return response.ok;
+            } catch {
+                return false;
+            }
+        }
+
+        // 📌 Теории
+        static async getTheories() {
+            try {
+                const response = await fetch(`${API_URL}/theories`);
+                if (!response.ok) throw new Error('Ошибка загрузки теорий');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки теорий:', error);
+                return JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+            }
+        }
+
+        static async saveTheory(theory) {
+            try {
+                const method = theory.id ? 'PUT' : 'POST';
+                const url = theory.id ? `${API_URL}/theories/${theory.id}` : `${API_URL}/theories`;
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(theory)
+                });
+
+                if (!response.ok) throw new Error('Ошибка сохранения теории');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка сохранения теории:', error);
+                // Сохраняем локально
+                const theories = JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+                if (theory.id) {
+                    const index = theories.findIndex(t => t.id === theory.id);
+                    if (index !== -1) {
+                        theories[index] = theory;
+                    }
+                } else {
+                    theories.push(theory);
+                }
+                localStorage.setItem('qazstep_theories', JSON.stringify(theories));
+                return theory;
+            }
+        }
+
+        static async deleteTheory(id) {
+            try {
+                const response = await fetch(`${API_URL}/theories/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Ошибка удаления теории');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка удаления теории:', error);
+                // Удаляем локально
+                const theories = JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+                const filteredTheories = theories.filter(t => t.id !== id);
+                localStorage.setItem('qazstep_theories', JSON.stringify(filteredTheories));
+                return { success: true };
+            }
+        }
+
+        // 📌 Медиафайлы (пока локально)
+        static async getUploadedFiles() {
+            return JSON.parse(localStorage.getItem('qazstep_uploadedFiles') || '[]');
+        }
+
+        // 📌 История действий
+        static async addRecentAction(action, type = 'system') {
+            const actions = JSON.parse(localStorage.getItem('qazstep_recentActions') || '[]');
+            const user = JSON.parse(localStorage.getItem('qazstep_session'));
+
+            const newAction = {
+                id: Date.now(),
+                action: action,
+                type: type,
+                user: user ? user.name : 'system',
+                timestamp: new Date().toISOString(),
+                time: new Date().toLocaleTimeString('ru-RU')
+            };
+
+            actions.unshift(newAction);
+            if (actions.length > 50) {
+                actions.pop();
+            }
+
+            localStorage.setItem('qazstep_recentActions', JSON.stringify(actions));
+            return newAction;
+        }
+    }
+
+    // ====================
+    // ФУНКЦИИ ДЛЯ РАБОТЫ С ТЕОРИЯМИ
+    // ====================
+
+    // 📌 Функция для сохранения новой теории
+    async function saveNewTheory(theoryData) {
+        try {
+            const result = await QazStepAPI.saveTheory(theoryData);
+            console.log('Теория сохранена:', result);
+
+            // Обновляем localStorage
+            const theories = JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+            if (theoryData.id) {
+                const index = theories.findIndex(t => t.id === theoryData.id);
+                if (index !== -1) {
+                    theories[index] = theoryData;
+                }
+            } else {
+                theories.push(theoryData);
+            }
+            localStorage.setItem('qazstep_theories', JSON.stringify(theories));
+
+            return result;
+        } catch (error) {
+            console.error('Ошибка сохранения теории:', error);
+            throw error;
+        }
+    }
+
+    // 📌 Функция для редактирования теории
+    async function editTheory(theoryId, updatedData) {
+        try {
+            const theories = JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+            const theoryIndex = theories.findIndex(t => t.id === theoryId);
+
+            if (theoryIndex === -1) {
+                throw new Error('Теория не найдена');
+            }
+
+            theories[theoryIndex] = {
+                ...theories[theoryIndex],
+                ...updatedData,
+                updatedAt: new Date().toISOString()
+            };
+
+            // Пробуем сохранить на сервер
+            await QazStepAPI.saveTheory(theories[theoryIndex]);
+
+            // Сохраняем локально
+            localStorage.setItem('qazstep_theories', JSON.stringify(theories));
+
+            console.log('Теория обновлена:', theories[theoryIndex]);
+            return theories[theoryIndex];
+        } catch (error) {
+            console.error('Ошибка редактирования теории:', error);
+            throw error;
+        }
+    }
+
+    // 📌 Функция для удаления теории
+    async function deleteTheory(theoryId) {
+        try {
+            const theories = JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+            const theory = theories.find(t => t.id === theoryId);
+
+            if (!theory) {
+                throw new Error('Теория не найдена');
+            }
+
+            // Удаляем с сервера (если доступен)
+            await QazStepAPI.deleteTheory(theoryId);
+
+            // Удаляем локально
+            const filteredTheories = theories.filter(t => t.id !== theoryId);
+            localStorage.setItem('qazstep_theories', JSON.stringify(filteredTheories));
+
+            console.log('Теория удалена:', theory.title);
+            return true;
+        } catch (error) {
+            console.error('Ошибка удаления теории:', error);
+            throw error;
+        }
+    }
+
+    // 📌 Функция для увеличения просмотров
+    async function incrementViews(theoryId) {
+        try {
+            const theories = JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+            const theoryIndex = theories.findIndex(t => t.id === theoryId);
+
+            if (theoryIndex === -1) return;
+
+            theories[theoryIndex].views = (theories[theoryIndex].views || 0) + 1;
+
+            // Сохраняем изменения
+            await QazStepAPI.saveTheory(theories[theoryIndex]);
+            localStorage.setItem('qazstep_theories', JSON.stringify(theories));
+
+            console.log(`Просмотры теории "${theories[theoryIndex].title}": ${theories[theoryIndex].views}`);
+        } catch (error) {
+            console.error('Ошибка обновления просмотров:', error);
+        }
+    }
+
+    // 📌 Функция для открытия теории
+    async function openTheory(id) {
+        try {
+            const theories = JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+            const theory = theories.find(t => t.id === id);
+
+            if (!theory) {
+                showNotification('Теория не найдена', 'error');
+                return;
+            }
+
+            // Увеличиваем просмотры
+            await incrementViews(id);
+
+            // Получаем медиафайлы
+            const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles') || '[]');
+            const imageFile = theory.imageFileId ? uploadedFiles.find(f => f.id.toString() === theory.imageFileId.toString()) : null;
+            const mediaFile = theory.mediaFileId ? uploadedFiles.find(f => f.id.toString() === theory.mediaFileId.toString()) : null;
+
+            // Создаем и показываем модальное окно
+            const modalId = `theoryModal-${id}`;
+
+            // Проверяем, не открыто ли уже модальное окно
+            if (document.getElementById(modalId)) {
+                return;
+            }
+
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = modalId;
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3>${theory.title}</h3>
+                        <button class="close-modal" onclick="closeModal('${modalId}')">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="theory-meta">
+                            <span class="badge level-badge level-${theory.level.toLowerCase()}">${theory.level}</span>
+                            <span><i class="fa-solid fa-eye"></i> ${(theory.views || 0) + 1} просмотров</span>
+                            <span><i class="fa-solid fa-calendar"></i> ${new Date(theory.createdAt || Date.now()).toLocaleDateString('ru-RU')}</span>
+                        </div>
+
+                        ${imageFile ? `
+                            <div style="margin: 20px 0; text-align: center;">
+                                <img src="${imageFile.dataUrl}" alt="${imageFile.name}"
+                                     style="max-width: 100%; max-height: 400px; border-radius: 12px; box-shadow: var(--shadow-soft);">
+                                <p style="text-align: center; color: var(--color-text); margin-top: 10px; font-size: 0.9rem;">
+                                    ${imageFile.name}
+                                </p>
+                            </div>
+                        ` : ''}
+
+                        ${mediaFile && mediaFile.type === 'video' ? `
+                            <div style="margin: 20px 0; text-align: center;">
+                                <video controls style="max-width: 100%; border-radius: 12px; box-shadow: var(--shadow-soft);">
+                                    <source src="${mediaFile.dataUrl}" type="video/mp4">
+                                    Ваш браузер не поддерживает видео.
+                                </video>
+                                <p style="text-align: center; color: var(--color-text); margin-top: 10px; font-size: 0.9rem;">
+                                    ${mediaFile.name}
+                                </p>
+                            </div>
+                        ` : ''}
+
+                        <div class="theory-content" style="margin-top: 20px;">
+                            ${theory.content || '<p>Содержание пока не добавлено</p>'}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn--secondary" onclick="closeModal('${modalId}')">Закрыть</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // Закрытие по клику вне модального окна
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal(modalId);
+                }
+            });
+
+            // Закрытие по ESC
+            document.addEventListener('keydown', function closeOnEsc(e) {
+                if (e.key === 'Escape') {
+                    closeModal(modalId);
+                    document.removeEventListener('keydown', closeOnEsc);
+                }
+            });
+
+        } catch (error) {
+            console.error('Ошибка открытия теории:', error);
+            showNotification('Ошибка загрузки теории', 'error');
+        }
+    }
+
+    // 📌 Убедимся, что функция closeModal правильно закрывает модальные окна
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            // Добавляем анимацию исчезновения
+            modal.classList.add('fade-out');
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.remove();
+                }
+            }, 300);
+        }
+    }
+
+    // ====================
+    // ОСНОВНОЙ СКРИПТ ДЛЯ СТРАНИЦЫ ТЕОРИИ
+    // ====================
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        console.log("Страница теории загружена");
+
+        // Инициализация
+        await initDatabase();
+        updateAuthUI();
+        setupHamburgerMenu();
+
+        // Загрузка теорий
+        await loadTheories();
+    });
+
+    async function initDatabase() {
+        console.log("Инициализация базы данных...");
+
+        try {
+            // Проверяем соединение с сервером
+            const isConnected = await QazStepAPI.checkConnection();
+            console.log("Соединение с сервером:", isConnected ? "✓ Установлено" : "✗ Нет связи");
+
+            if (isConnected) {
+                // Загружаем данные с сервера
+                const theories = await QazStepAPI.getTheories();
+
+                // Сохраняем в localStorage как кэш
+                localStorage.setItem('qazstep_theories', JSON.stringify(theories));
+
+                console.log(`Загружено с сервера: ${theories.length} теорий`);
+            } else {
+                console.log('Работаем в автономном режиме (localStorage)');
+                initLocalStorage();
+            }
+        } catch (error) {
+            console.error('Ошибка при загрузке с сервера:', error);
+            initLocalStorage();
+        }
+    }
+
+    function initLocalStorage() {
+        // Если нет теорий - инициализируем пустой массив
+        if (!localStorage.getItem('qazstep_theories')) {
+            console.log("Инициализируем базу теорий");
+            localStorage.setItem('qazstep_theories', JSON.stringify([]));
+        }
+
+        // Если нет загруженных файлов - инициализируем
+        if (!localStorage.getItem('qazstep_uploadedFiles')) {
+            localStorage.setItem('qazstep_uploadedFiles', JSON.stringify([]));
+        }
+
+        // Если нет действий - инициализируем
+        if (!localStorage.getItem('qazstep_recentActions')) {
+            localStorage.setItem('qazstep_recentActions', JSON.stringify([]));
+        }
+
+        // Добавим проверку для users, если теорию добавляет пользователь
+        if (!localStorage.getItem('qazstep_users')) {
+            localStorage.setItem('qazstep_users', JSON.stringify([]));
+        }
+    }
+
+    // Функция обновления UI авторизации
+    function updateAuthUI() {
+        const authButtons = document.getElementById('authButtons');
+        if (!authButtons) return;
+
+        const session = localStorage.getItem('qazstep_session');
+        let user = null;
+
+        if (session) {
+            try {
+                user = JSON.parse(session);
+            } catch (e) {
+                console.error("Ошибка при парсинге сессии:", e);
+            }
+        }
+
+        if (user) {
+            authButtons.innerHTML = `
+                <div class="user-menu">
+                    <span class="user-greeting">
+                        <i class="fa-solid fa-user"></i>
+                        ${user.name}
+                    </span>
+                    <button onclick="logout()" class="btn btn--small btn--secondary">
+                        Выйти
+                    </button>
+                </div>
+            `;
+        } else {
+            authButtons.innerHTML = `
+                <div class="auth-buttons">
+                    <a href="login.html" class="btn btn--secondary btn--small">
+                        Вход
+                    </a>
+                    <a href="register.html" class="btn btn--primary btn--small">
+                        Регистрация
+                    </a>
+                </div>
+            `;
+        }
+    }
+
+    // Функция выхода
+    async function logout() {
+        const session = localStorage.getItem('qazstep_session');
+        let user = null;
+
+        if (session) {
+            try {
+                user = JSON.parse(session);
+            } catch (e) {
+                console.error("Ошибка при парсинге сессии:", e);
+            }
+        }
+
+        if (user) {
+            await QazStepAPI.addRecentAction(`Пользователь ${user.name} вышел из системы`, 'user');
+        }
+        localStorage.removeItem('qazstep_session');
+        showNotification('Вы вышли из системы', 'success');
+        setTimeout(() => {
+            updateAuthUI();
+            window.location.href = 'index.html';
+        }, 1000);
+    }
+
+    // Инициализация меню
+    function setupHamburgerMenu() {
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('.primary-nav');
+
+        if (hamburger && nav) {
+            hamburger.addEventListener('click', () => {
+                nav.classList.toggle('show');
+                hamburger.classList.toggle('is-active');
+            });
+
+            // Закрытие меню при клике на ссылку
+            nav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    nav.classList.remove('show');
+                    hamburger.classList.remove('is-active');
+                });
+            });
+        }
+    }
+
+    async function loadTheories() {
+        try {
+            // Загружаем теории с сервера
+            const theories = await QazStepAPI.getTheories();
+            console.log("Загружено теорий:", theories.length);
+
+            // Показываем все теории
+            displayTheories(theories);
+        } catch (error) {
+            console.error('Ошибка загрузки теорий:', error);
+            showNotification('Ошибка загрузки теорий', 'error');
+        }
+    }
+
+    async function displayTheories(theories) {
+        const container = document.getElementById('theoryGrid');
+        const emptyState = document.getElementById('emptyState');
+
+        if (!container) return;
+
+        if (!theories || theories.length === 0) {
+            container.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
+        }
+
+        emptyState.style.display = 'none';
+
+        // Загружаем медиафайлы
+        const uploadedFiles = await QazStepAPI.getUploadedFiles();
+
+        let html = '';
+
+        theories.forEach(theory => {
+            const imageFile = theory.imageFileId ? uploadedFiles.find(f => f.id.toString() === theory.imageFileId.toString()) : null;
+            const mediaFile = theory.mediaFileId ? uploadedFiles.find(f => f.id.toString() === theory.mediaFileId.toString()) : null;
+
+            html += `
+                <div class="theory-card">
+                    <div class="theory-card__icon">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                    <span class="badge level-badge level-${theory.level.toLowerCase()}">${theory.level}</span>
+                    <h3>${theory.title}</h3>
+
+                    ${imageFile ? `
+                        <div style="margin: 10px 0;">
+                            <img src="${imageFile.dataUrl}" alt="${imageFile.name}"
+                                 style="max-width: 100%; max-height: 150px; border-radius: 8px; object-fit: cover;">
+                        </div>
+                    ` : ''}
+
+                    <p class="theory-card__preview">${stripHtml(theory.content || '').substring(0, 150)}...</p>
+
+                    <div style="margin-top: 10px;">
+                        ${imageFile ? `<span class="media-badge"><i class="fa-solid fa-image"></i> Изображение</span>` : ''}
+                        ${mediaFile ? `<span class="media-badge"><i class="fa-solid fa-video"></i> Видео</span>` : ''}
+                    </div>
+
+                    <div class="theory-card__meta">
+                        <span style="color: var(--color-text); font-size: 0.9rem;">
+                            <i class="fa-solid fa-eye"></i> ${theory.views || 0}
+                        </span>
+                        <button onclick="openTheory(${theory.id})" class="btn btn--primary" style="padding: 8px 16px;">
+                            <i class="fa-solid fa-book-open"></i> Читать
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    async function filterTheories(level) {
+        try {
+            const theories = await QazStepAPI.getTheories();
+            let filteredTheories = theories;
+
+            if (level !== 'all') {
+                filteredTheories = theories.filter(theory => theory.level === level);
+            }
+
+            // Обновляем активный фильтр
+            const filterChips = document.querySelectorAll('.filter-chip');
+            filterChips.forEach(chip => {
+                chip.classList.remove('is-active');
+                if (chip.dataset.level === level) {
+                    chip.classList.add('is-active');
+                }
+            });
+
+            // Сбрасываем поиск
+            document.getElementById('theorySearch').value = '';
+
+            displayTheories(filteredTheories);
+        } catch (error) {
+            console.error('Ошибка фильтрации теорий:', error);
+        }
+    }
+
+    async function searchTheories() {
+        const searchTerm = document.getElementById('theorySearch').value.toLowerCase();
+
+        try {
+            const theories = await QazStepAPI.getTheories();
+            const emptyState = document.getElementById('emptyState');
+
+            if (!searchTerm) {
+                // Показываем все теории
+                const activeFilter = document.querySelector('.filter-chip.is-active');
+                if (activeFilter) {
+                    filterTheories(activeFilter.dataset.level);
+                }
+                return;
+            }
+
+            const filteredTheories = theories.filter(theory =>
+                theory.title.toLowerCase().includes(searchTerm) ||
+                (theory.content || '').toLowerCase().includes(searchTerm) ||
+                (theory.category || '').toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredTheories.length === 0) {
+                const container = document.getElementById('theoryGrid');
+                if (container) {
+                    container.innerHTML = '';
+                    emptyState.style.display = 'block';
+                }
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            displayTheories(filteredTheories);
+        } catch (error) {
+            console.error('Ошибка поиска теорий:', error);
+        }
+    }
+
+    function resetFilters() {
+        document.getElementById('theorySearch').value = '';
+        const filterChips = document.querySelectorAll('.filter-chip');
+        filterChips.forEach(chip => chip.classList.remove('is-active'));
+        filterChips[0].classList.add('is-active'); // "Все уровни"
+        filterTheories('all');
+    }
+
+    function stripHtml(html) {
+        if (!html) return '';
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || '';
+    }
+
+    function showNotification(message, type = 'info') {
+        const container = document.getElementById('notificationContainer');
+        if (!container) return;
+
+        // Удаляем старые уведомления
+        const oldNotifications = container.querySelectorAll('.notification');
+        oldNotifications.forEach(n => n.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' :
+                              type === 'error' ? 'fa-exclamation-circle' :
+                              'fa-info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+            <button class="notification-close">&times;</button>
+        `;
+
+        container.appendChild(notification);
+
+        // Автоматическое закрытие
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+
+        // Закрытие по клику
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        });
+    }
+
+    // ====================
+    // ТЕСТОВЫЕ ФУНКЦИИ (для проверки)
+    // ====================
+
+    async function testCreateTheory() {
+        try {
+            const testTheory = {
+                id: Date.now(),
+                title: "Тестовая теория",
+                level: "A1",
+                category: "grammar",
+                content: "<h2>Тестовая теория</h2><p>Это тестовая теория для проверки сохранения.</p>",
+                views: 0,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            const savedTheory = await saveNewTheory(testTheory);
+            showNotification('Тестовая теория создана!', 'success');
+
+            // Обновляем отображение
+            await loadTheories();
+
+            return savedTheory;
+        } catch (error) {
+            console.error('Ошибка создания тестовой теории:', error);
+            showNotification('Ошибка создания тестовой теории', 'error');
+        }
+    }
+
+    async function testUpdateTheory(theoryId) {
+        try {
+            const theories = JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+            const theory = theories.find(t => t.id === theoryId);
+
+            if (!theory) {
+                showNotification('Теория не найдена', 'error');
+                return;
+            }
+
+            const updatedTheory = await editTheory(theoryId, {
+                title: `${theory.title} (обновлено)`,
+                content: `${theory.content}<p><em>Обновлено: ${new Date().toLocaleString()}</em></p>`
+            });
+
+            showNotification('Теория обновлена!', 'success');
+            await loadTheories();
+
+            return updatedTheory;
+        } catch (error) {
+            console.error('Ошибка обновления теории:', error);
+            showNotification('Ошибка обновления теории', 'error');
+        }
+    }
+
+    // Глобальные функции
+    window.openTheory = openTheory;
+    window.filterTheories = filterTheories;
+    window.searchTheories = searchTheories;
+    window.resetFilters = resetFilters;
+    window.closeModal = closeModal;
+    window.logout = logout;
+    window.testCreateTheory = testCreateTheory;
+    window.testUpdateTheory = testUpdateTheory;
+    window.saveNewTheory = saveNewTheory;
+    window.editTheory = editTheory;
+    window.deleteTheory = deleteTheory;
+    </script>
+</body>
+</html>

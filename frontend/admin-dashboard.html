@@ -1,0 +1,2248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель QazStep</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-container {
+            min-height: 100vh;
+            background: var(--color-light);
+            padding: 20px;
+        }
+
+        .admin-header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-soft);
+            border-left: 6px solid var(--color-primary);
+        }
+
+        .admin-header h1 {
+            color: var(--color-primary);
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .admin-header p {
+            color: var(--color-text);
+            margin-bottom: 20px;
+        }
+
+        .admin-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .admin-section h2 {
+            color: var(--color-primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: var(--color-light);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: transform var(--transition-base);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card p {
+            color: var(--color-text);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .stat-card h3 {
+            color: var(--color-primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-card small {
+            color: var(--color-text);
+            opacity: 0.8;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .admin-table th {
+            background: var(--color-primary);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .admin-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(121, 135, 148, 0.1);
+        }
+
+        .admin-table tr:hover {
+            background: rgba(40, 65, 109, 0.03);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn--small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn--edit {
+            background: rgba(97, 139, 104, 0.1);
+            color: var(--color-success);
+            border: 1px solid rgba(97, 139, 104, 0.3);
+        }
+
+        .btn--delete {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .btn--success {
+            background: var(--color-success);
+            color: white;
+        }
+
+        .btn--success:hover {
+            background: rgba(97, 139, 104, 0.9);
+        }
+
+        .admin-login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            padding: 20px;
+        }
+
+        .admin-login-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow-soft);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .admin-login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .admin-login-header i {
+            color: var(--color-primary);
+            margin-bottom: 15px;
+        }
+
+        .admin-login-header h1 {
+            color: var(--color-primary);
+            margin-bottom: 10px;
+        }
+
+        .file-upload {
+            border: 2px dashed rgba(121, 135, 148, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            background: rgba(250, 244, 232, 0.5);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            margin-bottom: 20px;
+        }
+
+        .file-upload:hover {
+            border-color: var(--color-primary);
+            background: rgba(40, 65, 109, 0.05);
+        }
+
+        .file-upload i {
+            font-size: 3rem;
+            color: var(--color-text);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .uploaded-files {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid rgba(121, 135, 148, 0.2);
+        }
+
+        .uploaded-file {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: var(--color-light);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .uploaded-file:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .file-icon {
+            color: var(--color-primary);
+            font-size: 1.2rem;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: var(--color-primary);
+        }
+
+        .file-size {
+            color: var(--color-text);
+            font-size: 0.9rem;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .preview-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 10px;
+        }
+
+        .preview-video {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .file-input-hidden {
+            display: none;
+        }
+
+        .media-library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .media-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--shadow-soft);
+            transition: transform var(--transition-base);
+        }
+
+        .media-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .media-preview {
+            height: 120px;
+            background: var(--color-light);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .media-preview img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .order-controls {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .order-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: rgba(40, 65, 109, 0.1);
+            border: none;
+            color: var(--color-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-base);
+        }
+
+        .order-btn:hover {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .order-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .order-btn:disabled:hover {
+            background: rgba(40, 65, 109, 0.1);
+            color: var(--color-primary);
+        }
+
+        .order-number {
+            font-weight: 600;
+            color: var(--color-primary);
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: var(--color-light);
+            border-radius: 8px;
+        }
+
+        .media-item-select {
+            transition: all 0.3s;
+        }
+
+        .media-item-select:hover {
+            border-color: var(--color-primary) !important;
+            background: rgba(40, 65, 109, 0.05) !important;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--color-success);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .action-type {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            line-height: 24px;
+            border-radius: 4px;
+            margin-right: 8px;
+            font-size: 0.8rem;
+        }
+
+        .action-theory {
+            background: rgba(40, 65, 109, 0.1);
+            color: var(--color-primary);
+        }
+
+        .action-lesson {
+            background: rgba(97, 139, 104, 0.1);
+            color: var(--color-success);
+        }
+
+        .action-user {
+            background: rgba(204, 182, 140, 0.1);
+            color: var(--color-secondary);
+        }
+
+        .action-media {
+            background: rgba(121, 135, 148, 0.1);
+            color: var(--color-text);
+        }
+
+        .action-level {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .action-system {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .admin-section {
+                padding: 20px;
+            }
+
+            .quick-actions {
+                flex-direction: column;
+            }
+
+            .quick-actions .btn {
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Уведомления -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <div class="admin-container" id="adminContainer">
+        <!-- Контент загружается через JavaScript -->
+        <div class="loading" style="text-align: center; padding: 100px 20px; color: var(--color-text);">
+            <i class="fas fa-spinner fa-spin fa-2x" style="margin-bottom: 20px;"></i>
+            <p>Загрузка админ-панели...</p>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Админ-панель загружается...");
+        checkAdminAuth();
+    });
+
+    function checkAdminAuth() {
+        console.log("Проверка авторизации администратора...");
+
+        setTimeout(() => {
+            const currentSession = JSON.parse(localStorage.getItem('qazstep_session'));
+
+            if (currentSession && currentSession.role === 'admin') {
+                console.log("Пользователь авторизован как администратор:", currentSession.name);
+                loadAdminDashboard();
+            } else {
+                console.log("Пользователь не авторизован или не администратор");
+                showAdminLoginForm();
+            }
+        }, 100);
+    }
+
+    function showAdminLoginForm() {
+        const container = document.getElementById('adminContainer');
+        container.innerHTML = `
+            <div class="admin-login-container">
+                <div class="admin-login-card">
+                    <div class="admin-login-header">
+                        <i class="fa-solid fa-lock fa-2x"></i>
+                        <h1>Доступ к админ-панели</h1>
+                        <p>Войдите как администратор для управления платформой</p>
+                    </div>
+
+                    <form id="adminLoginForm">
+                        <div class="form-group">
+                            <label for="adminEmail">Email администратора</label>
+                            <input type="email" id="adminEmail" required
+                                   placeholder="Введите email администратора">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminPassword">Пароль</label>
+                            <input type="password" id="adminPassword" required
+                                   placeholder="Введите пароль">
+                        </div>
+
+                        <button type="submit" class="btn btn--primary btn--large">
+                            <i class="fa-solid fa-key"></i>
+                            Войти как администратор
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const email = this.querySelector('#adminEmail').value.trim();
+            const password = this.querySelector('#adminPassword').value;
+
+            console.log("Попытка входа в админку:", email);
+
+            const users = JSON.parse(localStorage.getItem('qazstep_users')) || [];
+            const adminUser = users.find(u => u.email === email && u.password === password && u.role === 'admin');
+
+            if (adminUser) {
+                console.log("Администратор найден:", adminUser.name);
+
+                const session = {
+                    userId: adminUser.id,
+                    email: adminUser.email,
+                    name: adminUser.name,
+                    role: adminUser.role,
+                    level: adminUser.level,
+                    loginTime: new Date().toISOString()
+                };
+
+                localStorage.setItem('qazstep_session', JSON.stringify(session));
+                addRecentAction(`Администратор ${adminUser.name} вошел в систему`, 'system');
+                showNotification('Добро пожаловать в админ-панель!', 'success');
+
+                setTimeout(() => {
+                    loadAdminDashboard();
+                }, 1000);
+            } else {
+                showNotification('Неверные данные администратора', 'error');
+            }
+        });
+    }
+
+    function loadAdminDashboard() {
+        console.log("Загрузка админ-панели...");
+
+        const currentSession = JSON.parse(localStorage.getItem('qazstep_session'));
+        const container = document.getElementById('adminContainer');
+
+        container.innerHTML = `
+            <div class="admin-header">
+                <h1><i class="fa-solid fa-cog"></i> Панель администратора QazStep</h1>
+                <p>Управление платформой для изучения казахского языка</p>
+                <div style="display: flex; gap: 15px; margin-top: 20px; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 10px; background: rgba(40, 65, 109, 0.08); padding: 10px 20px; border-radius: var(--radius-lg);">
+                        <i class="fa-solid fa-user-shield" style="color: var(--color-primary);"></i>
+                        <span style="color: var(--color-primary); font-weight: 600;">${currentSession.name}</span>
+                    </div>
+                    <button class="btn btn--secondary" onclick="logoutAdmin()">
+                        <i class="fa-solid fa-sign-out-alt"></i> Выйти
+                    </button>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h2><i class="fa-solid fa-chart-bar"></i> Общая статистика</h2>
+                <div class="stats-grid" id="statsGrid">
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h2><i class="fa-solid fa-photo-film"></i> Управление медиафайлами</h2>
+                <div class="quick-actions">
+                    <button class="btn btn--primary" onclick="showUploadMediaModal()">
+                        <i class="fa-solid fa-upload"></i> Загрузить файлы
+                    </button>
+                    <button class="btn btn--secondary" onclick="showMediaLibrary()">
+                        <i class="fa-solid fa-images"></i> Библиотека медиа
+                    </button>
+                </div>
+                <div id="mediaLibraryContainer">
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h2><i class="fa-solid fa-bolt"></i> Быстрые действия</h2>
+                <div class="quick-actions">
+                    <button class="btn btn--primary" onclick="showAddTheoryModal()">
+                        <i class="fa-solid fa-plus"></i> Добавить теорию
+                    </button>
+                    <button class="btn btn--primary" onclick="showAddLessonModal()">
+                        <i class="fa-solid fa-plus"></i> Добавить урок
+                    </button>
+                    <button class="btn btn--success" onclick="refreshDashboard()">
+                        <i class="fa-solid fa-sync"></i> Обновить статистику
+                    </button>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h2><i class="fa-solid fa-graduation-cap"></i> Управление уроками</h2>
+                <div class="table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Порядок</th>
+                                <th>Название</th>
+                                <th>Уровень</th>
+                                <th>Тип</th>
+                                <th>Прогресс</th>
+                                <th>Дата</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lessonsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h2><i class="fa-solid fa-book"></i> Управление теориями</h2>
+                <div class="table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Название</th>
+                                <th>Уровень</th>
+                                <th>Категория</th>
+                                <th>Дата</th>
+                                <th>Просмотры</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="theoryTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-section">
+                <h2><i class="fa-solid fa-history"></i> Последние действия</h2>
+                <div class="table-wrapper">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Время</th>
+                                <th>Действие</th>
+                                <th>Пользователь</th>
+                            </tr>
+                        </thead>
+                        <tbody id="actionsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        loadAdminStats();
+        loadLessonsForAdmin();
+        loadTheoriesForAdmin();
+        loadRecentActions();
+        showMediaLibrary();
+    }
+
+    function loadAdminStats() {
+        const users = JSON.parse(localStorage.getItem('qazstep_users')) || [];
+        const lessons = JSON.parse(localStorage.getItem('qazstep_lessons')) || [];
+        const theories = JSON.parse(localStorage.getItem('qazstep_theories')) || [];
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+
+        const totalUsers = users.length;
+        const totalLessons = lessons.length;
+        const totalTheories = theories.length;
+        const totalFiles = uploadedFiles.length;
+
+        const activeLessons = lessons.filter(l => l.progress > 0).length;
+        const totalViews = theories.reduce((sum, theory) => sum + (theory.views || 0), 0);
+
+        const statsContainer = document.getElementById('statsGrid');
+        if (statsContainer) {
+            statsContainer.innerHTML = `
+                <article class="stat-card" style="border-top: 4px solid #28416d">
+                    <p>Пользователи</p>
+                    <h3>${totalUsers}</h3>
+                    <small>Всего зарегистрировано</small>
+                </article>
+                <article class="stat-card" style="border-top: 4px solid #618b68">
+                    <p>Уроки</p>
+                    <h3>${totalLessons}</h3>
+                    <small>Активные: <strong>${activeLessons}</strong></small>
+                </article>
+                <article class="stat-card" style="border-top: 4px solid #798794">
+                    <p>Теории</p>
+                    <h3>${totalTheories}</h3>
+                    <small>Просмотры: <strong>${totalViews}</strong></small>
+                </article>
+                <article class="stat-card" style="border-top: 4px solid #ccb68c">
+                    <p>Медиафайлы</p>
+                    <h3>${totalFiles}</h3>
+                    <small>Всего загружено</small>
+                </article>
+            `;
+        }
+    }
+
+    function loadLessonsForAdmin() {
+        const lessons = JSON.parse(localStorage.getItem('qazstep_lessons')) || [];
+        const tableBody = document.getElementById('lessonsTableBody');
+
+        if (!tableBody) return;
+
+        lessons.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+        tableBody.innerHTML = '';
+
+        if (lessons.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                        <i class="fas fa-graduation-cap" style="font-size: 48px; margin-bottom: 15px; display: block; color: #ddd;"></i>
+                        <p>Уроки пока не добавлены</p>
+                        <button class="btn btn--primary" onclick="showAddLessonModal()" style="margin-top: 10px;">
+                            <i class="fas fa-plus"></i> Добавить первый урок
+                        </button>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        lessons.forEach((lesson, index) => {
+            const date = new Date(lesson.createdAt).toLocaleDateString('ru-RU');
+            const hasMedia = lesson.mediaFileId;
+            const totalLessons = lessons.length;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <div class="order-controls">
+                        <button class="order-btn" onclick="moveLessonUp(${lesson.id})" ${index === 0 ? 'disabled' : ''}>
+                            <i class="fa-solid fa-chevron-up"></i>
+                        </button>
+                        <div class="order-number">${index + 1}</div>
+                        <button class="order-btn" onclick="moveLessonDown(${lesson.id})" ${index === totalLessons - 1 ? 'disabled' : ''}>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </td>
+                <td>
+                    <strong>${lesson.title}</strong>
+                    ${hasMedia ? '<i class="fa-solid fa-image" style="color: #618b68; margin-left: 5px;"></i>' : ''}
+                </td>
+                <td><span class="badge level-badge level-${lesson.level.toLowerCase()}">${lesson.level}</span></td>
+                <td>${getLessonTypeName(lesson.type)}</td>
+                <td>
+                    <div class="progress" style="width: 100px; margin: 0;">
+                        <div class="progress__fill" style="width: ${lesson.progress || 0}%"></div>
+                    </div>
+                    <small>${lesson.progress || 0}%</small>
+                </td>
+                <td>${date}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn--small btn--edit" onclick="editLesson(${lesson.id})">
+                            <i class="fa-solid fa-edit"></i>
+                        </button>
+                        <button class="btn btn--small btn--delete" onclick="deleteLesson(${lesson.id}, '${lesson.title}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function getLessonTypeName(type) {
+        const types = {
+            'video': 'Видео',
+            'audio': 'Аудио',
+            'theory': 'Теория',
+            'practice': 'Практика'
+        };
+        return types[type] || type;
+    }
+
+    window.moveLessonUp = function(lessonId) {
+        const lessons = JSON.parse(localStorage.getItem('qazstep_lessons')) || [];
+        const lessonIndex = lessons.findIndex(l => l.id === lessonId);
+
+        if (lessonIndex > 0) {
+            [lessons[lessonIndex - 1], lessons[lessonIndex]] = [lessons[lessonIndex], lessons[lessonIndex - 1]];
+            lessons.forEach((lesson, index) => {
+                lesson.order = index + 1;
+            });
+
+            localStorage.setItem('qazstep_lessons', JSON.stringify(lessons));
+            addRecentAction(`Изменен порядок урока: "${lessons[lessonIndex - 1].title}"`, 'lesson');
+            showNotification('Порядок урока изменен', 'success');
+            loadLessonsForAdmin();
+        }
+    };
+
+    window.moveLessonDown = function(lessonId) {
+        const lessons = JSON.parse(localStorage.getItem('qazstep_lessons')) || [];
+        const lessonIndex = lessons.findIndex(l => l.id === lessonId);
+        const totalLessons = lessons.length;
+
+        if (lessonIndex < totalLessons - 1) {
+            [lessons[lessonIndex], lessons[lessonIndex + 1]] = [lessons[lessonIndex + 1], lessons[lessonIndex]];
+            lessons.forEach((lesson, index) => {
+                lesson.order = index + 1;
+            });
+
+            localStorage.setItem('qazstep_lessons', JSON.stringify(lessons));
+            addRecentAction(`Изменен порядок урока: "${lessons[lessonIndex + 1].title}"`, 'lesson');
+            showNotification('Порядок урока изменен', 'success');
+            loadLessonsForAdmin();
+        }
+    };
+
+    window.deleteLesson = function(id, title) {
+        if (!confirm(`Вы уверены, что хотите удалить урок "${title}"?`)) {
+            return;
+        }
+
+        const lessons = JSON.parse(localStorage.getItem('qazstep_lessons')) || [];
+        const lesson = lessons.find(l => l.id === id);
+
+        if (lesson && lesson.mediaFileId) {
+            removeFileUsage(lesson.mediaFileId, `урок: "${title}"`);
+        }
+
+        const filteredLessons = lessons.filter(l => l.id !== id);
+        filteredLessons.forEach((lesson, index) => {
+            lesson.order = index + 1;
+        });
+        localStorage.setItem('qazstep_lessons', JSON.stringify(filteredLessons));
+
+        addRecentAction(`Удален урок: "${title}"`, 'lesson');
+        showNotification('Урок успешно удален', 'success');
+        loadLessonsForAdmin();
+        loadAdminStats();
+    };
+
+    window.showAddLessonModal = function() {
+        const modalHTML = `
+            <div class="modal active" id="addLessonModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-plus"></i> Добавить новый урок</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addLessonForm">
+                            <div class="form-group">
+                                <label for="lessonTitle">Название урока</label>
+                                <input type="text" id="lessonTitle" required placeholder="Введите название урока">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="lessonLevel">Уровень</label>
+                                    <select id="lessonLevel" required>
+                                        <option value="A1">A1 (Начальный)</option>
+                                        <option value="A2">A2 (Элементарный)</option>
+                                        <option value="B1">B1 (Средний)</option>
+                                        <option value="B2">B2 (Выше среднего)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="lessonType">Тип урока</label>
+                                    <select id="lessonType" required>
+                                        <option value="video">Видео урок</option>
+                                        <option value="audio">Аудио урок</option>
+                                        <option value="theory">Теоретический урок</option>
+                                        <option value="practice">Практический урок</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lessonMedia">Медиафайл урока</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <select id="lessonMediaSelect" class="form-control" style="flex: 1;">
+                                        <option value="">-- Выберите медиафайл --</option>
+                                    </select>
+                                    <button type="button" class="btn btn--secondary" onclick="showUploadMediaModal()">
+                                        <i class="fa-solid fa-upload"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="lessonDuration">Длительность</label>
+                                    <input type="text" id="lessonDuration" placeholder="15 мин">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="lessonOrder">Порядок</label>
+                                    <input type="number" id="lessonOrder" min="1" value="1">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lessonDescription">Описание</label>
+                                <textarea id="lessonDescription" rows="4" required placeholder="Опишите содержание урока"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lessonContent">Содержание урока (HTML)</label>
+                                <textarea id="lessonContent" rows="8" placeholder="<h2>Заголовок</h2><p>Содержание урока...</p>"></textarea>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn--secondary" onclick="closeModal('addLessonModal')">Отмена</button>
+                                <button type="submit" class="btn btn--primary">
+                                    <i class="fa-solid fa-save"></i> Сохранить урок
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const mediaSelect = document.getElementById('lessonMediaSelect');
+
+        if (mediaSelect) {
+            mediaSelect.innerHTML = '<option value="">-- Выберите медиафайл --</option>';
+            uploadedFiles.forEach(file => {
+                mediaSelect.innerHTML += `<option value="${file.id}">${file.name} (${file.type})</option>`;
+            });
+        }
+
+        document.getElementById('addLessonForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('lessonTitle').value;
+            const level = document.getElementById('lessonLevel').value;
+            const type = document.getElementById('lessonType').value;
+            const description = document.getElementById('lessonDescription').value;
+            const content = document.getElementById('lessonContent').value;
+            const duration = document.getElementById('lessonDuration').value;
+            const order = parseInt(document.getElementById('lessonOrder').value) || 1;
+            const mediaFileId = document.getElementById('lessonMediaSelect').value;
+
+            if (!title || !description) {
+                showNotification('Заполните название и описание урока', 'error');
+                return;
+            }
+
+            const lessons = JSON.parse(localStorage.getItem('qazstep_lessons')) || [];
+            const currentSession = JSON.parse(localStorage.getItem('qazstep_session'));
+
+            const newLesson = {
+                id: Date.now(),
+                title: title,
+                level: level,
+                type: type,
+                description: description,
+                content: content || `<h2>${title}</h2><p>${description}</p>`,
+                duration: duration || '15 мин',
+                mediaFileId: mediaFileId || "",
+                progress: 0,
+                order: order,
+                author: currentSession ? currentSession.name : 'Администратор',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+
+            updateFileUsage(mediaFileId, `урок: "${title}"`);
+
+            lessons.push(newLesson);
+            lessons.sort((a, b) => a.order - b.order);
+            lessons.forEach((lesson, index) => {
+                lesson.order = index + 1;
+            });
+
+            localStorage.setItem('qazstep_lessons', JSON.stringify(lessons));
+
+            addRecentAction(`Добавлен урок: "${title}"`, 'lesson');
+            showNotification('Урок успешно добавлен!', 'success');
+            closeModal('addLessonModal');
+
+            loadLessonsForAdmin();
+            loadAdminStats();
+        });
+
+        initModalClose('addLessonModal');
+    };
+
+    window.editLesson = function(id) {
+        const lessons = JSON.parse(localStorage.getItem('qazstep_lessons')) || [];
+        const lesson = lessons.find(l => l.id === id);
+
+        if (!lesson) {
+            showNotification('Урок не найден', 'error');
+            return;
+        }
+
+        const modalHTML = `
+            <div class="modal active" id="editLessonModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-edit"></i> Редактировать урок</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editLessonForm">
+                            <div class="form-group">
+                                <label for="editLessonTitle">Название урока</label>
+                                <input type="text" id="editLessonTitle" value="${lesson.title}" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="editLessonLevel">Уровень</label>
+                                    <select id="editLessonLevel" required>
+                                        <option value="A1" ${lesson.level === 'A1' ? 'selected' : ''}>A1</option>
+                                        <option value="A2" ${lesson.level === 'A2' ? 'selected' : ''}>A2</option>
+                                        <option value="B1" ${lesson.level === 'B1' ? 'selected' : ''}>B1</option>
+                                        <option value="B2" ${lesson.level === 'B2' ? 'selected' : ''}>B2</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="editLessonType">Тип урока</label>
+                                    <select id="editLessonType" required>
+                                        <option value="video" ${lesson.type === 'video' ? 'selected' : ''}>Видео</option>
+                                        <option value="audio" ${lesson.type === 'audio' ? 'selected' : ''}>Аудио</option>
+                                        <option value="theory" ${lesson.type === 'theory' ? 'selected' : ''}>Теория</option>
+                                        <option value="practice" ${lesson.type === 'practice' ? 'selected' : ''}>Практика</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editLessonMedia">Медиафайл урока</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <select id="editLessonMediaSelect" class="form-control" style="flex: 1;">
+                                        <option value="">-- Выберите медиафайл --</option>
+                                    </select>
+                                    <button type="button" class="btn btn--secondary" onclick="showUploadMediaModal()">
+                                        <i class="fa-solid fa-upload"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="editLessonDuration">Длительность</label>
+                                    <input type="text" id="editLessonDuration" value="${lesson.duration || ''}" placeholder="15 мин">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="editLessonProgress">Прогресс</label>
+                                    <input type="number" id="editLessonProgress" min="0" max="100" value="${lesson.progress || 0}">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editLessonDescription">Описание</label>
+                                <textarea id="editLessonDescription" rows="4" required>${lesson.description}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editLessonContent">Содержание урока (HTML)</label>
+                                <textarea id="editLessonContent" rows="8">${lesson.content || ''}</textarea>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn--secondary" onclick="closeModal('editLessonModal')">Отмена</button>
+                                <button type="submit" class="btn btn--primary">Сохранить изменения</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const mediaSelect = document.getElementById('editLessonMediaSelect');
+
+        if (mediaSelect) {
+            mediaSelect.innerHTML = '<option value="">-- Выберите медиафайл --</option>';
+            uploadedFiles.forEach(file => {
+                mediaSelect.innerHTML += `<option value="${file.id}" ${lesson.mediaFileId == file.id ? 'selected' : ''}>${file.name} (${file.type})</option>`;
+            });
+        }
+
+        document.getElementById('editLessonForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const updatedLesson = {
+                ...lesson,
+                title: document.getElementById('editLessonTitle').value,
+                level: document.getElementById('editLessonLevel').value,
+                type: document.getElementById('editLessonType').value,
+                duration: document.getElementById('editLessonDuration').value,
+                progress: parseInt(document.getElementById('editLessonProgress').value) || 0,
+                description: document.getElementById('editLessonDescription').value,
+                content: document.getElementById('editLessonContent').value,
+                mediaFileId: document.getElementById('editLessonMediaSelect').value || "",
+                updatedAt: new Date().toISOString()
+            };
+
+            const lessons = JSON.parse(localStorage.getItem('qazstep_lessons')) || [];
+            const index = lessons.findIndex(l => l.id === id);
+
+            if (index !== -1) {
+                if (lesson.mediaFileId && lesson.mediaFileId !== updatedLesson.mediaFileId) {
+                    removeFileUsage(lesson.mediaFileId, `урок: "${lesson.title}"`);
+                }
+
+                if (updatedLesson.mediaFileId) {
+                    updateFileUsage(updatedLesson.mediaFileId, `урок: "${updatedLesson.title}"`);
+                }
+
+                lessons[index] = updatedLesson;
+                lessons.sort((a, b) => a.order - b.order);
+                lessons.forEach((lesson, index) => {
+                    lesson.order = index + 1;
+                });
+
+                localStorage.setItem('qazstep_lessons', JSON.stringify(lessons));
+
+                addRecentAction(`Отредактирован урок: "${updatedLesson.title}"`, 'lesson');
+                showNotification('Урок успешно обновлен!', 'success');
+                closeModal('editLessonModal');
+                loadLessonsForAdmin();
+            }
+        });
+
+        initModalClose('editLessonModal');
+    };
+
+    function loadTheoriesForAdmin() {
+        const theories = JSON.parse(localStorage.getItem('qazstep_theories')) || [];
+        const tableBody = document.getElementById('theoryTableBody');
+
+        if (!tableBody) return;
+
+        tableBody.innerHTML = '';
+
+        if (theories.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #666;">
+                        <i class="fas fa-book" style="font-size: 48px; margin-bottom: 15px; display: block; color: #ddd;"></i>
+                        <p>Теорий пока нет</p>
+                        <button class="btn btn--primary" onclick="showAddTheoryModal()" style="margin-top: 10px;">
+                            <i class="fas fa-plus"></i> Добавить первую теорию
+                        </button>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        theories.forEach((theory, index) => {
+            const date = new Date(theory.createdAt).toLocaleDateString('ru-RU');
+            const hasMedia = theory.imageFileId || theory.mediaFileId;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td><strong>${theory.title}</strong> ${hasMedia ? '<i class="fa-solid fa-image" style="color: #618b68; margin-left: 5px;"></i>' : ''}</td>
+                <td><span class="badge level-badge level-${theory.level.toLowerCase()}">${theory.level}</span></td>
+                <td>${getCategoryName(theory.category)}</td>
+                <td>${date}</td>
+                <td>${theory.views || 0}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn btn--small btn--edit" onclick="editTheory(${theory.id})">
+                            <i class="fa-solid fa-edit"></i>
+                        </button>
+                        <button class="btn btn--small btn--delete" onclick="deleteTheory(${theory.id}, '${theory.title}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function getCategoryName(category) {
+        const categories = {
+            'grammar': 'Грамматика',
+            'vocabulary': 'Лексика',
+            'pronunciation': 'Произношение',
+            'alphabet': 'Алфавит',
+            'culture': 'Культура'
+        };
+        return categories[category] || category;
+    }
+
+    window.deleteTheory = function(id, title) {
+        if (!confirm(`Вы уверены, что хотите удалить теорию "${title}"?`)) {
+            return;
+        }
+
+        const theories = JSON.parse(localStorage.getItem('qazstep_theories')) || [];
+        const theory = theories.find(t => t.id === id);
+
+        if (theory) {
+            if (theory.imageFileId) {
+                removeFileUsage(theory.imageFileId, `теория: "${title}"`);
+            }
+            if (theory.mediaFileId) {
+                removeFileUsage(theory.mediaFileId, `теория: "${title}"`);
+            }
+        }
+
+        const filteredTheories = theories.filter(t => t.id !== id);
+        localStorage.setItem('qazstep_theories', JSON.stringify(filteredTheories));
+
+        addRecentAction(`Удалена теория: "${title}"`, 'theory');
+        showNotification('Теория успешно удалена', 'success');
+        loadTheoriesForAdmin();
+        loadAdminStats();
+    };
+
+    function removeFileUsage(fileId, usageInfo) {
+        if (!fileId) return;
+
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const fileIndex = uploadedFiles.findIndex(f => f.id.toString() === fileId.toString());
+
+        if (fileIndex !== -1 && uploadedFiles[fileIndex].usedIn) {
+            uploadedFiles[fileIndex].usedIn = uploadedFiles[fileIndex].usedIn.filter(usage => usage !== usageInfo);
+            localStorage.setItem('qazstep_uploadedFiles', JSON.stringify(uploadedFiles));
+        }
+    }
+
+    function updateFileUsage(fileId, usageInfo) {
+        if (!fileId) return;
+
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const fileIndex = uploadedFiles.findIndex(f => f.id.toString() === fileId.toString());
+
+        if (fileIndex !== -1) {
+            if (!uploadedFiles[fileIndex].usedIn) {
+                uploadedFiles[fileIndex].usedIn = [];
+            }
+
+            if (!uploadedFiles[fileIndex].usedIn.includes(usageInfo)) {
+                uploadedFiles[fileIndex].usedIn.push(usageInfo);
+                localStorage.setItem('qazstep_uploadedFiles', JSON.stringify(uploadedFiles));
+            }
+        }
+    }
+
+    function showUploadMediaModal() {
+        const modalHTML = `
+            <div class="modal active" id="uploadMediaModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-upload"></i> Загрузка медиафайлов</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="file-upload" onclick="document.getElementById('mediaFileInput').click()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <p>Нажмите для загрузки файлов</p>
+                            <small>Поддерживаются: изображения (JPG, PNG, GIF) и видео (MP4, WEBM)</small>
+                            <input type="file" id="mediaFileInput" class="file-input-hidden"
+                                   accept="image/*,video/*" multiple onchange="handleFileUpload(this.files)">
+                        </div>
+
+                        <div id="uploadProgress" style="display: none;">
+                            <div class="progress">
+                                <div class="progress__fill" id="uploadProgressBar" style="width: 0%"></div>
+                            </div>
+                            <p id="uploadStatus" style="text-align: center; margin-top: 10px;">Загрузка...</p>
+                        </div>
+
+                        <div class="uploaded-files" id="uploadedFilesList">
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn--secondary" onclick="closeModal('uploadMediaModal')">Закрыть</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        initModalClose('uploadMediaModal');
+        updateUploadedFilesList();
+    }
+
+    function handleFileUpload(files) {
+        if (!files || files.length === 0) return;
+
+        const progressContainer = document.getElementById('uploadProgress');
+        const progressBar = document.getElementById('uploadProgressBar');
+        const statusText = document.getElementById('uploadStatus');
+
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        statusText.textContent = `Загрузка 0 из ${files.length} файлов...`;
+
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+
+        Array.from(files).forEach((file, index) => {
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const fileType = file.type.startsWith('image/') ? 'image' : 'video';
+
+                const fileData = {
+                    id: Date.now() + index,
+                    name: file.name,
+                    type: fileType,
+                    size: formatFileSize(file.size),
+                    dataUrl: e.target.result,
+                    uploadDate: new Date().toISOString(),
+                    usedIn: []
+                };
+
+                uploadedFiles.push(fileData);
+
+                const progress = Math.round(((index + 1) / files.length) * 100);
+                progressBar.style.width = progress + '%';
+                statusText.textContent = `Загрузка ${index + 1} из ${files.length} файлов...`;
+
+                if (index === files.length - 1) {
+                    localStorage.setItem('qazstep_uploadedFiles', JSON.stringify(uploadedFiles));
+
+                    setTimeout(() => {
+                        progressContainer.style.display = 'none';
+                        statusText.textContent = 'Загрузка...';
+                        updateUploadedFilesList();
+                        showNotification(`Загружено ${files.length} файлов`, 'success');
+
+                        addRecentAction(`Загружены медиафайлы: ${files.length} файлов`, 'media');
+                        closeModal('uploadMediaModal');
+                        showMediaLibrary();
+                    }, 500);
+                }
+            };
+
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function updateUploadedFilesList() {
+        const container = document.getElementById('uploadedFilesList');
+        if (!container) return;
+
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+
+        if (uploadedFiles.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--color-text);">Нет загруженных файлов</p>';
+            return;
+        }
+
+        let html = '<h4 style="margin-bottom: 15px;">Последние загруженные файлы:</h4>';
+
+        uploadedFiles.slice(-5).reverse().forEach(file => {
+            html += `
+                <div class="uploaded-file">
+                    <div class="file-info">
+                        <i class="file-icon fa-solid ${file.type === 'image' ? 'fa-image' : 'fa-video'}"></i>
+                        <div>
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${file.size} • ${new Date(file.uploadDate).toLocaleDateString('ru-RU')}</div>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn--small btn--edit" onclick="previewFile('${file.id}')">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button class="btn btn--small btn--delete" onclick="deleteFile('${file.id}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    function showMediaLibrary() {
+        const container = document.getElementById('mediaLibraryContainer');
+        if (!container) return;
+
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+
+        if (uploadedFiles.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 40px; background: var(--color-light); border-radius: 12px; margin-top: 20px;">
+                    <i class="fa-solid fa-images" style="font-size: 48px; color: rgba(121, 135, 148, 0.3); margin-bottom: 15px;"></i>
+                    <p style="color: var(--color-text);">Библиотека медиафайлов пуста</p>
+                    <button class="btn btn--primary" onclick="showUploadMediaModal()" style="margin-top: 15px;">
+                        <i class="fa-solid fa-upload"></i> Загрузить файлы
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        let html = `
+            <div style="margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: var(--color-primary);">Все медиафайлы (${uploadedFiles.length})</h3>
+                    <button class="btn btn--primary" onclick="showUploadMediaModal()">
+                        <i class="fa-solid fa-plus"></i> Добавить ещё
+                    </button>
+                </div>
+                <div class="media-library-grid">
+        `;
+
+        uploadedFiles.reverse().forEach(file => {
+            const isImage = file.type === 'image';
+
+            html += `
+                <div class="media-item">
+                    <div class="media-preview">
+                        ${isImage ?
+                            `<img src="${file.dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 100%; object-fit: contain;">` :
+                            `<i class="fa-solid fa-video" style="font-size: 2rem; color: var(--color-primary);"></i>`
+                        }
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <div style="font-weight: 600; color: var(--color-primary); margin-bottom: 5px; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${file.name}
+                        </div>
+                        <div style="color: var(--color-text); font-size: 0.8rem;">
+                            ${file.size} • ${new Date(file.uploadDate).toLocaleDateString('ru-RU')}
+                        </div>
+                        <div style="color: var(--color-text); font-size: 0.8rem; margin-top: 3px;">
+                            Используется: ${file.usedIn ? file.usedIn.length : 0}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="btn btn--small" onclick="previewFile('${file.id}')" style="flex: 1;">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button class="btn btn--small" onclick="copyFileUrl('${file.id}')" style="flex: 1;">
+                            <i class="fa-solid fa-copy"></i>
+                        </button>
+                        <button class="btn btn--small btn--delete" onclick="deleteFile('${file.id}')" style="flex: 1;">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+    }
+
+    function previewFile(fileId) {
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const file = uploadedFiles.find(f => f.id.toString() === fileId.toString());
+
+        if (!file) {
+            showNotification('Файл не найден', 'error');
+            return;
+        }
+
+        const modalHTML = `
+            <div class="modal active" id="previewModal">
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3>Просмотр: ${file.name}</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="preview-container">
+                            ${file.type === 'image' ?
+                                `<img src="${file.dataUrl}" alt="${file.name}" class="preview-image">` :
+                                `<video controls class="preview-video">
+                                    <source src="${file.dataUrl}" type="${file.type === 'video' ? 'video/mp4' : ''}">
+                                    Ваш браузер не поддерживает видео.
+                                </video>`
+                            }
+                        </div>
+                        <div style="background: var(--color-light); padding: 15px; border-radius: 8px; margin-top: 20px;">
+                            <h4>Информация о файле:</h4>
+                            <p><strong>Имя:</strong> ${file.name}</p>
+                            <p><strong>Тип:</strong> ${file.type === 'image' ? 'Изображение' : 'Видео'}</p>
+                            <p><strong>Размер:</strong> ${file.size}</p>
+                            <p><strong>Загружен:</strong> ${new Date(file.uploadDate).toLocaleString('ru-RU')}</p>
+                            <p><strong>Использован в:</strong> ${file.usedIn && file.usedIn.length > 0 ? file.usedIn.join(', ') : 'Нигде не используется'}</p>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button class="btn btn--primary" onclick="copyFileUrl('${file.id}')">
+                                <i class="fa-solid fa-copy"></i> Копировать ссылку
+                            </button>
+                            <button class="btn btn--edit" onclick="editFileMetadata('${file.id}')">
+                                <i class="fa-solid fa-edit"></i> Изменить
+                            </button>
+                            <button class="btn btn--delete" onclick="deleteFile('${file.id}')">
+                                <i class="fa-solid fa-trash"></i> Удалить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        initModalClose('previewModal');
+    }
+
+    function copyFileUrl(fileId) {
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const file = uploadedFiles.find(f => f.id.toString() === fileId.toString());
+
+        if (!file) {
+            showNotification('Файл не найден', 'error');
+            return;
+        }
+
+        const tempInput = document.createElement('input');
+        tempInput.value = file.dataUrl;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+
+        showNotification('Ссылка на файл скопирована', 'success');
+    }
+
+    function editFileMetadata(fileId) {
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const fileIndex = uploadedFiles.findIndex(f => f.id.toString() === fileId.toString());
+
+        if (fileIndex === -1) {
+            showNotification('Файл не найден', 'error');
+            return;
+        }
+
+        const newName = prompt('Новое имя файла:', uploadedFiles[fileIndex].name);
+        if (newName && newName.trim() !== '') {
+            uploadedFiles[fileIndex].name = newName.trim();
+            localStorage.setItem('qazstep_uploadedFiles', JSON.stringify(uploadedFiles));
+
+            addRecentAction(`Переименован файл: "${newName}"`, 'media');
+            showNotification('Имя файла изменено', 'success');
+
+            closeModal('previewModal');
+            showMediaLibrary();
+        }
+    }
+
+    function deleteFile(fileId) {
+        if (!confirm('Удалить этот файл? Это действие нельзя отменить.')) {
+            return;
+        }
+
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const file = uploadedFiles.find(f => f.id.toString() === fileId.toString());
+
+        if (!file) {
+            showNotification('Файл не найден', 'error');
+            return;
+        }
+
+        if (file.usedIn && file.usedIn.length > 0) {
+            if (!confirm(`ВНИМАНИЕ: Этот файл используется в ${file.usedIn.length} месте(ах). Удалить всё равно?`)) {
+                return;
+            }
+        }
+
+        const filteredFiles = uploadedFiles.filter(f => f.id.toString() !== fileId.toString());
+        localStorage.setItem('qazstep_uploadedFiles', JSON.stringify(filteredFiles));
+
+        addRecentAction(`Удален файл: "${file.name}"`, 'media');
+        showNotification('Файл удален', 'success');
+
+        closeModal('previewModal');
+        showMediaLibrary();
+        updateUploadedFilesList();
+    }
+
+    window.showAddTheoryModal = function() {
+        const modalHTML = `
+            <div class="modal active" id="addTheoryModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-plus"></i> Добавить теорию</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addTheoryForm">
+                            <div class="form-group">
+                                <label for="theoryTitle">Название темы</label>
+                                <input type="text" id="theoryTitle" required placeholder="Введите название темы">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="theoryLevel">Уровень</label>
+                                    <select id="theoryLevel" required>
+                                        <option value="A1">A1 (Начальный)</option>
+                                        <option value="A2">A2 (Элементарный)</option>
+                                        <option value="B1">B1 (Средний)</option>
+                                        <option value="B2">B2 (Выше среднего)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="theoryCategory">Категория</label>
+                                    <select id="theoryCategory" required>
+                                        <option value="grammar">Грамматика</option>
+                                        <option value="vocabulary">Лексика</option>
+                                        <option value="pronunciation">Произношение</option>
+                                        <option value="alphabet">Алфавит</option>
+                                        <option value="culture">Культура</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="theoryImage">Изображение для теории</label>
+                                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                    <select id="theoryImageSelect" class="form-control" onchange="previewSelectedImage(this.value)" style="flex: 1;">
+                                        <option value="">-- Выберите изображение --</option>
+                                    </select>
+                                    <button type="button" class="btn btn--secondary" onclick="showUploadMediaModal()">
+                                        <i class="fa-solid fa-upload"></i>
+                                    </button>
+                                </div>
+                                <div id="imagePreview" style="margin-top: 10px; display: none;">
+                                    <img id="selectedImagePreview" src="" alt="Предпросмотр" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+                                    <button type="button" class="btn btn--small btn--delete" onclick="clearImageSelection()" style="margin-top: 10px;">
+                                        <i class="fa-solid fa-times"></i> Убрать изображение
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="theoryMedia">Медиафайл (аудио/видео)</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <select id="theoryMediaSelect" class="form-control" style="flex: 1;">
+                                        <option value="">-- Выберите медиафайл --</option>
+                                    </select>
+                                    <button type="button" class="btn btn--secondary" onclick="showUploadMediaModal()">
+                                        <i class="fa-solid fa-upload"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="theoryContent">Содержание</label>
+                                <div class="editor-toolbar">
+                                    <button type="button" class="btn btn--small" onclick="formatText('bold', 'theoryContent')" title="Жирный"><b>B</b></button>
+                                    <button type="button" class="btn btn--small" onclick="formatText('italic', 'theoryContent')" title="Курсив"><i>I</i></button>
+                                    <button type="button" class="btn btn--small" onclick="formatText('h2', 'theoryContent')" title="Заголовок">H2</button>
+                                    <button type="button" class="btn btn--small" onclick="formatText('h3', 'theoryContent')" title="Подзаголовок">H3</button>
+                                    <button type="button" class="btn btn--small" onclick="formatText('ul', 'theoryContent')" title="Список">•</button>
+                                    <button type="button" class="btn btn--small" onclick="formatText('ol', 'theoryContent')" title="Нумерованный список">1.</button>
+                                </div>
+                                <textarea id="theoryContent" rows="12" required placeholder="Введите содержание теоретического материала..."></textarea>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn--secondary" onclick="closeModal('addTheoryModal')">Отмена</button>
+                                <button type="submit" class="btn btn--primary">
+                                    <i class="fa-solid fa-save"></i> Сохранить теорию
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        populateMediaSelectors();
+
+        document.getElementById('addTheoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('theoryTitle').value.trim();
+            const level = document.getElementById('theoryLevel').value;
+            const category = document.getElementById('theoryCategory').value;
+            const content = document.getElementById('theoryContent').value.trim();
+            const selectedImage = document.getElementById('theoryImageSelect').value;
+            const selectedMedia = document.getElementById('theoryMediaSelect').value;
+
+            if (!title || !content) {
+                showNotification('Заполните название и содержание', 'error');
+                return;
+            }
+
+            const theories = JSON.parse(localStorage.getItem('qazstep_theories')) || [];
+            const currentSession = JSON.parse(localStorage.getItem('qazstep_session'));
+
+            const newTheory = {
+                id: Date.now(),
+                title: title,
+                level: level,
+                category: category,
+                content: content,
+                imageFileId: selectedImage || "",
+                mediaFileId: selectedMedia || "",
+                author: currentSession ? currentSession.name : 'Администратор',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                views: 0,
+                likes: 0
+            };
+
+            updateFileUsage(selectedImage, `теория: "${title}"`);
+            updateFileUsage(selectedMedia, `теория: "${title}"`);
+
+            theories.push(newTheory);
+            localStorage.setItem('qazstep_theories', JSON.stringify(theories));
+
+            addRecentAction(`Добавлена теория: "${title}"`, 'theory');
+            showNotification('Теория успешно добавлена!', 'success');
+            closeModal('addTheoryModal');
+
+            loadTheoriesForAdmin();
+            loadAdminStats();
+        });
+
+        initModalClose('addTheoryModal');
+    };
+
+    function populateMediaSelectors() {
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const imageSelect = document.getElementById('theoryImageSelect');
+        const mediaSelect = document.getElementById('theoryMediaSelect');
+
+        if (imageSelect) {
+            imageSelect.innerHTML = '<option value="">-- Выберите изображение --</option>';
+            uploadedFiles.filter(f => f.type === 'image').forEach(file => {
+                imageSelect.innerHTML += `<option value="${file.id}">${file.name}</option>`;
+            });
+        }
+
+        if (mediaSelect) {
+            mediaSelect.innerHTML = '<option value="">-- Выберите медиафайл --</option>';
+            uploadedFiles.filter(f => f.type === 'video').forEach(file => {
+                mediaSelect.innerHTML += `<option value="${file.id}">${file.name}</option>`;
+            });
+        }
+    }
+
+    function previewSelectedImage(fileId) {
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const file = uploadedFiles.find(f => f.id.toString() === fileId.toString());
+
+        const preview = document.getElementById('imagePreview');
+        const img = document.getElementById('selectedImagePreview');
+
+        if (file && file.type === 'image') {
+            img.src = file.dataUrl;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    function clearImageSelection() {
+        document.getElementById('theoryImageSelect').value = '';
+        document.getElementById('imagePreview').style.display = 'none';
+    }
+
+    window.editTheory = function(id) {
+        const theories = JSON.parse(localStorage.getItem('qazstep_theories')) || [];
+        const theory = theories.find(t => t.id === id);
+
+        if (!theory) {
+            showNotification('Теория не найдена', 'error');
+            return;
+        }
+
+        const modalHTML = `
+            <div class="modal active" id="editTheoryModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fa-solid fa-edit"></i> Редактировать теорию</h3>
+                        <button class="close-modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editTheoryForm">
+                            <div class="form-group">
+                                <label for="editTheoryTitle">Название темы</label>
+                                <input type="text" id="editTheoryTitle" value="${theory.title}" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="editTheoryLevel">Уровень</label>
+                                    <select id="editTheoryLevel" required>
+                                        <option value="A1" ${theory.level === 'A1' ? 'selected' : ''}>A1</option>
+                                        <option value="A2" ${theory.level === 'A2' ? 'selected' : ''}>A2</option>
+                                        <option value="B1" ${theory.level === 'B1' ? 'selected' : ''}>B1</option>
+                                        <option value="B2" ${theory.level === 'B2' ? 'selected' : ''}>B2</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="editTheoryCategory">Категория</label>
+                                    <select id="editTheoryCategory" required>
+                                        <option value="grammar" ${theory.category === 'grammar' ? 'selected' : ''}>Грамматика</option>
+                                        <option value="vocabulary" ${theory.category === 'vocabulary' ? 'selected' : ''}>Лексика</option>
+                                        <option value="pronunciation" ${theory.category === 'pronunciation' ? 'selected' : ''}>Произношение</option>
+                                        <option value="alphabet" ${theory.category === 'alphabet' ? 'selected' : ''}>Алфавит</option>
+                                        <option value="culture" ${theory.category === 'culture' ? 'selected' : ''}>Культура</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editTheoryImage">Изображение для теории</label>
+                                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                                    <select id="editTheoryImageSelect" class="form-control" onchange="previewSelectedImageEdit(this.value)" style="flex: 1;">
+                                        <option value="">-- Выберите изображение --</option>
+                                    </select>
+                                    <button type="button" class="btn btn--secondary" onclick="showUploadMediaModal()">
+                                        <i class="fa-solid fa-upload"></i>
+                                    </button>
+                                </div>
+                                <div id="editImagePreview" style="margin-top: 10px; display: ${theory.imageFileId ? 'block' : 'none'};">
+                                    <img id="editSelectedImagePreview" src="${getFileUrl(theory.imageFileId)}" alt="Предпросмотр" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+                                    <button type="button" class="btn btn--small btn--delete" onclick="clearEditImageSelection()" style="margin-top: 10px;">
+                                        <i class="fa-solid fa-times"></i> Убрать изображение
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editTheoryMedia">Медиафайл (аудио/видео)</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <select id="editTheoryMediaSelect" class="form-control" style="flex: 1;">
+                                        <option value="">-- Выберите медиафайл --</option>
+                                    </select>
+                                    <button type="button" class="btn btn--secondary" onclick="showUploadMediaModal()">
+                                        <i class="fa-solid fa-upload"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="editTheoryContent">Содержание</label>
+                                <div class="editor-toolbar">
+                                    <button type="button" class="btn btn--small" onclick="formatText('bold', 'editTheoryContent')" title="Жирный"><b>B</b></button>
+                                    <button type="button" class="btn btn--small" onclick="formatText('italic', 'editTheoryContent')" title="Курсив"><i>I</i></button>
+                                    <button type="button" class="btn btn--small" onclick="formatText('h2', 'editTheoryContent')" title="Заголовок">H2</button>
+                                    <button type="button" class="btn btn--small" onclick="formatText('h3', 'editTheoryContent')" title="Подзаголовок">H3</button>
+                                    <button type="button" class="btn btn--small" onclick="formatText('ul', 'editTheoryContent')" title="Список">•</button>
+                                    <button type="button" class="btn btn--small" onclick="formatText('ol', 'editTheoryContent')" title="Нумерованный список">1.</button>
+                                </div>
+                                <textarea id="editTheoryContent" rows="12" required>${theory.content}</textarea>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn--secondary" onclick="closeModal('editTheoryModal')">Отмена</button>
+                                <button type="submit" class="btn btn--primary">
+                                    <i class="fa-solid fa-save"></i> Сохранить изменения
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        populateEditMediaSelectors(id);
+
+        document.getElementById('editTheoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const updatedTheory = {
+                ...theory,
+                title: document.getElementById('editTheoryTitle').value,
+                level: document.getElementById('editTheoryLevel').value,
+                category: document.getElementById('editTheoryCategory').value,
+                content: document.getElementById('editTheoryContent').value,
+                imageFileId: document.getElementById('editTheoryImageSelect').value || "",
+                mediaFileId: document.getElementById('editTheoryMediaSelect').value || "",
+                updatedAt: new Date().toISOString()
+            };
+
+            const theories = JSON.parse(localStorage.getItem('qazstep_theories')) || [];
+            const index = theories.findIndex(t => t.id === id);
+
+            if (index !== -1) {
+                if (theory.imageFileId && theory.imageFileId !== updatedTheory.imageFileId) {
+                    removeFileUsage(theory.imageFileId, `теория: "${theory.title}"`);
+                }
+
+                if (theory.mediaFileId && theory.mediaFileId !== updatedTheory.mediaFileId) {
+                    removeFileUsage(theory.mediaFileId, `теория: "${theory.title}"`);
+                }
+
+                if (updatedTheory.imageFileId) {
+                    updateFileUsage(updatedTheory.imageFileId, `теория: "${updatedTheory.title}"`);
+                }
+
+                if (updatedTheory.mediaFileId) {
+                    updateFileUsage(updatedTheory.mediaFileId, `теория: "${updatedTheory.title}"`);
+                }
+
+                theories[index] = updatedTheory;
+                localStorage.setItem('qazstep_theories', JSON.stringify(theories));
+
+                addRecentAction(`Отредактирована теория: "${updatedTheory.title}"`, 'theory');
+                showNotification('Теория успешно обновлена!', 'success');
+                closeModal('editTheoryModal');
+                loadTheoriesForAdmin();
+            }
+        });
+
+        initModalClose('editTheoryModal');
+    };
+
+    function populateEditMediaSelectors(theoryId) {
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const theories = JSON.parse(localStorage.getItem('qazstep_theories')) || [];
+        const theory = theories.find(t => t.id === theoryId);
+
+        const imageSelect = document.getElementById('editTheoryImageSelect');
+        const mediaSelect = document.getElementById('editTheoryMediaSelect');
+
+        if (imageSelect) {
+            imageSelect.innerHTML = '<option value="">-- Выберите изображение --</option>';
+            uploadedFiles.filter(f => f.type === 'image').forEach(file => {
+                imageSelect.innerHTML += `<option value="${file.id}" ${theory.imageFileId == file.id ? 'selected' : ''}>${file.name}</option>`;
+            });
+        }
+
+        if (mediaSelect) {
+            mediaSelect.innerHTML = '<option value="">-- Выберите медиафайл --</option>';
+            uploadedFiles.filter(f => f.type === 'video').forEach(file => {
+                mediaSelect.innerHTML += `<option value="${file.id}" ${theory.mediaFileId == file.id ? 'selected' : ''}>${file.name}</option>`;
+            });
+        }
+    }
+
+    function getFileUrl(fileId) {
+        if (!fileId) return '';
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const file = uploadedFiles.find(f => f.id.toString() === fileId.toString());
+        return file ? file.dataUrl : '';
+    }
+
+    function previewSelectedImageEdit(fileId) {
+        const uploadedFiles = JSON.parse(localStorage.getItem('qazstep_uploadedFiles')) || [];
+        const file = uploadedFiles.find(f => f.id.toString() === fileId.toString());
+
+        const preview = document.getElementById('editImagePreview');
+        const img = document.getElementById('editSelectedImagePreview');
+
+        if (file && file.type === 'image') {
+            img.src = file.dataUrl;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+    }
+
+    function clearEditImageSelection() {
+        document.getElementById('editTheoryImageSelect').value = '';
+        document.getElementById('editImagePreview').style.display = 'none';
+    }
+
+    function loadRecentActions() {
+        const actions = JSON.parse(localStorage.getItem('qazstep_recentActions')) || [];
+        const tableBody = document.getElementById('actionsTableBody');
+
+        if (!tableBody) return;
+
+        tableBody.innerHTML = '';
+
+        if (actions.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 30px; color: #666;">
+                        <i class="fa-solid fa-history" style="font-size: 24px; margin-bottom: 10px; display: block; color: #ddd;"></i>
+                        <p>История действий пуста</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        actions.slice(0, 10).forEach(action => {
+            const date = new Date(action.timestamp).toLocaleDateString('ru-RU');
+            const time = new Date(action.timestamp).toLocaleTimeString('ru-RU', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${date}</td>
+                <td>${time}</td>
+                <td>
+                    <span class="action-type action-${action.type}">
+                        ${getActionIcon(action.type)}
+                    </span>
+                    ${action.action}
+                </td>
+                <td>${action.user || 'system'}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function getActionIcon(type) {
+        const icons = {
+            'theory': '📖',
+            'lesson': '🎓',
+            'user': '👤',
+            'level': '📊',
+            'system': '⚙️',
+            'media': '📷'
+        };
+        return icons[type] || '📝';
+    }
+
+    function addRecentAction(action, type = 'system') {
+        const actions = JSON.parse(localStorage.getItem('qazstep_recentActions')) || [];
+        const user = JSON.parse(localStorage.getItem('qazstep_session'));
+
+        const newAction = {
+            id: Date.now(),
+            action: action,
+            type: type,
+            user: user ? user.name : 'system',
+            timestamp: new Date().toISOString(),
+            time: new Date().toLocaleTimeString('ru-RU')
+        };
+
+        actions.unshift(newAction);
+        if (actions.length > 50) {
+            actions.pop();
+        }
+
+        localStorage.setItem('qazstep_recentActions', JSON.stringify(actions));
+        loadRecentActions();
+    }
+
+    function showNotification(message, type = 'info') {
+        const container = document.getElementById('notificationContainer');
+        if (!container) return;
+
+        const oldNotifications = container.querySelectorAll('.notification');
+        oldNotifications.forEach(n => n.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' :
+                              type === 'error' ? 'fa-exclamation-circle' :
+                              type === 'warning' ? 'fa-exclamation-triangle' :
+                              'fa-info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+            <button class="notification-close">&times;</button>
+        `;
+
+        container.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        });
+    }
+
+    function initModalClose(modalId) {
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+
+        const closeBtn = modal.querySelector('.close-modal');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                closeModal(modalId);
+            });
+        }
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModal(modalId);
+            }
+        });
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    function formatText(format, textareaId) {
+        const textarea = document.getElementById(textareaId);
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selectedText = textarea.value.substring(start, end);
+
+        let formattedText = selectedText;
+
+        switch (format) {
+            case 'bold':
+                formattedText = `<strong>${selectedText}</strong>`;
+                break;
+            case 'italic':
+                formattedText = `<em>${selectedText}</em>`;
+                break;
+            case 'h2':
+                formattedText = `<h2>${selectedText}</h2>`;
+                break;
+            case 'h3':
+                formattedText = `<h3>${selectedText}</h3>`;
+                break;
+            case 'ul':
+                formattedText = `<ul>\n<li>${selectedText}</li>\n</ul>`;
+                break;
+            case 'ol':
+                formattedText = `<ol>\n<li>${selectedText}</li>\n</ol>`;
+                break;
+        }
+
+        textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + formattedText.length, start + formattedText.length);
+    }
+
+    window.logoutAdmin = function() {
+        localStorage.removeItem('qazstep_session');
+        showNotification('Вы вышли из админ-панели', 'success');
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1000);
+    };
+
+    window.refreshDashboard = function() {
+        loadAdminStats();
+        loadLessonsForAdmin();
+        loadTheoriesForAdmin();
+        loadRecentActions();
+        showNotification('Данные обновлены', 'success');
+    };
+    </script>
+</body>
+</html>

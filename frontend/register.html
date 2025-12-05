@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация в QazStep</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, var(--color-light), var(--color-bg));
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Уведомления -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <i class="fa-solid fa-user-plus" style="font-size: 3rem; color: var(--color-primary); margin-bottom: 15px;"></i>
+                <h1>Создать аккаунт</h1>
+                <p style="color: var(--color-text); margin-top: 10px;">Начните изучать казахский язык уже сегодня</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="name">Имя</label>
+                    <div style="position: relative;">
+                        <i class="fa-solid fa-user" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--color-text);"></i>
+                        <input type="text" id="name" required style="padding-left: 45px;" placeholder="Ваше имя">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <div style="position: relative;">
+                        <i class="fa-solid fa-envelope" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--color-text);"></i>
+                        <input type="email" id="email" required style="padding-left: 45px;" placeholder="ваш@email.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <div style="position: relative;">
+                        <i class="fa-solid fa-lock" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--color-text);"></i>
+                        <input type="password" id="password" required style="padding-left: 45px;" placeholder="Не менее 6 символов">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Подтвердите пароль</label>
+                    <div style="position: relative;">
+                        <i class="fa-solid fa-lock" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--color-text);"></i>
+                        <input type="password" id="confirmPassword" required style="padding-left: 45px;" placeholder="Повторите пароль">
+                    </div>
+                </div>
+
+                <div style="margin: 25px 0;">
+                    <button type="submit" class="btn btn--primary" style="width: 100%; padding: 16px; font-size: 1.1rem;">
+                        <i class="fa-solid fa-user-plus"></i>
+                        Зарегистрироваться
+                    </button>
+                </div>
+
+                <div style="text-align: center; margin-top: 25px; padding-top: 25px; border-top: 1px solid rgba(121, 135, 148, 0.2);">
+                    <p style="color: var(--color-text);">Уже есть аккаунт?
+                        <a href="login.html" style="color: var(--color-primary); font-weight: 600; text-decoration: none;">
+                            Войти
+                        </a>
+                    </p>
+                    <p style="margin-top: 15px;">
+                        <a href="index.html" style="color: var(--color-text); text-decoration: none;">
+                            <i class="fa-solid fa-arrow-left"></i> Вернуться на главную
+                        </a>
+                    </p>
+                </div>
+            </form>
+
+            <div style="margin-top: 30px; padding: 20px; background: rgba(40, 65, 109, 0.05); border-radius: 12px;">
+                <p style="margin: 0; color: var(--color-text); font-size: 0.9rem; line-height: 1.5;">
+                    <i class="fa-solid fa-shield-alt" style="color: var(--color-secondary); margin-right: 8px;"></i>
+                    Ваши данные защищены и используются только для работы с платформой.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ====================
+    // API ДЛЯ РАБОТЫ С СЕРВЕРОМ
+    // ====================
+    const API_URL = 'http://localhost:3000/api';
+
+    class QazStepAPI {
+        // 📌 Проверка соединения
+        static async checkConnection() {
+            try {
+                const response = await fetch(`${API_URL}/status`);
+                return response.ok;
+            } catch {
+                return false;
+            }
+        }
+
+        // 📌 Пользователи
+        static async getUsers() {
+            try {
+                const response = await fetch(`${API_URL}/users`);
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки пользователей:', error);
+                return JSON.parse(localStorage.getItem('qazstep_users') || '[]');
+            }
+        }
+
+        static async register(userData) {
+            try {
+                const response = await fetch(`${API_URL}/users/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка регистрации:', error);
+                throw error;
+            }
+        }
+
+        // 📌 История действий
+        static async addRecentAction(action, type = 'system') {
+            const actions = JSON.parse(localStorage.getItem('qazstep_recentActions') || '[]');
+            const user = JSON.parse(localStorage.getItem('qazstep_session'));
+
+            const newAction = {
+                id: Date.now(),
+                action: action,
+                type: type,
+                user: user ? user.name : 'system',
+                timestamp: new Date().toISOString(),
+                time: new Date().toLocaleTimeString('ru-RU')
+            };
+
+            actions.unshift(newAction);
+            if (actions.length > 50) {
+                actions.pop();
+            }
+
+            localStorage.setItem('qazstep_recentActions', JSON.stringify(actions));
+            return newAction;
+        }
+    }
+
+    // ====================
+    // СКРИПТ ДЛЯ СТРАНИЦЫ РЕГИСТРАЦИИ
+    // ====================
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        console.log("Страница регистрации загружена");
+
+        // Проверяем, есть ли активная сессия
+        const session = localStorage.getItem('qazstep_session');
+        if (session) {
+            try {
+                const user = JSON.parse(session);
+                showNotification(`Вы уже вошли как ${user.name}`, 'info');
+                setTimeout(() => {
+                    window.location.href = user.role === 'admin' ? 'admin-dashboard.html' : 'index.html';
+                }, 1000);
+            } catch (e) {
+                console.error("Ошибка при парсинге сессии:", e);
+                localStorage.removeItem('qazstep_session');
+            }
+        }
+
+        // Настраиваем форму регистрации
+        setupRegisterForm();
+
+        // Инициализируем базу данных
+        await initDatabase();
+    });
+
+    async function initDatabase() {
+        console.log("Инициализация базы данных...");
+
+        try {
+            // Проверяем соединение с сервером
+            const isConnected = await QazStepAPI.checkConnection();
+            console.log("Соединение с сервером:", isConnected ? "✓ Установлено" : "✗ Нет связи");
+
+            if (isConnected) {
+                // Загружаем данные с сервера
+                const users = await QazStepAPI.getUsers();
+
+                // Сохраняем в localStorage как кэш
+                localStorage.setItem('qazstep_users', JSON.stringify(users));
+
+                console.log(`Загружено с сервера: ${users.length} пользователей`);
+            } else {
+                console.log('Работаем в автономном режиме (localStorage)');
+                initLocalStorage();
+            }
+        } catch (error) {
+            console.error('Ошибка при загрузке с сервера:', error);
+            initLocalStorage();
+        }
+    }
+
+    function initLocalStorage() {
+        // Если нет пользователей - инициализируем пустой массив
+        if (!localStorage.getItem('qazstep_users')) {
+            console.log("Инициализируем базу пользователей");
+            localStorage.setItem('qazstep_users', JSON.stringify([]));
+        }
+
+        // Если нет действий - инициализируем
+        if (!localStorage.getItem('qazstep_recentActions')) {
+            localStorage.setItem('qazstep_recentActions', JSON.stringify([]));
+        }
+    }
+
+    function setupRegisterForm() {
+        const form = document.getElementById('registerForm');
+        if (!form) return;
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const name = this.querySelector('#name').value.trim();
+            const email = this.querySelector('#email').value.trim();
+            const password = this.querySelector('#password').value;
+            const confirmPassword = this.querySelector('#confirmPassword').value;
+
+            // Простая валидация
+            if (!name || !email || !password) {
+                showNotification('Заполните все поля', 'error');
+                return;
+            }
+
+            if (password.length < 6) {
+                showNotification('Пароль должен быть не менее 6 символов', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showNotification('Пароли не совпадают', 'error');
+                return;
+            }
+
+            // Проверка email
+            if (!email.includes('@') || !email.includes('.')) {
+                showNotification('Введите корректный email', 'error');
+                return;
+            }
+
+            // Блокируем кнопку во время регистрации
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Регистрация...';
+            submitBtn.disabled = true;
+
+            try {
+                // Пробуем зарегистрироваться через API
+                const newUser = await QazStepAPI.register({
+                    name,
+                    email,
+                    password,
+                    role: 'user',
+                    level: 'A1',
+                    createdAt: new Date().toISOString()
+                });
+
+                // Сохраняем сессию
+                localStorage.setItem('qazstep_session', JSON.stringify(newUser));
+
+                // Обновляем локальные данные
+                const users = JSON.parse(localStorage.getItem('qazstep_users') || '[]');
+                users.push(newUser);
+                localStorage.setItem('qazstep_users', JSON.stringify(users));
+
+                // Добавляем действие в историю
+                await QazStepAPI.addRecentAction(`Зарегистрирован новый пользователь: ${name}`, 'user');
+
+                showNotification('Регистрация успешна!', 'success');
+
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+
+            } catch (error) {
+                // Если API не работает, регистрируем локально
+                console.log('API недоступен, регистрируем локально:', error.message);
+
+                const users = JSON.parse(localStorage.getItem('qazstep_users')) || [];
+
+                // Проверяем, есть ли уже такой email
+                if (users.some(u => u.email === email)) {
+                    showNotification('Пользователь с таким email уже существует', 'error');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+
+                // Создаем нового пользователя
+                const newUser = {
+                    id: Date.now(),
+                    name: name,
+                    email: email,
+                    password: password,
+                    role: 'user',
+                    level: 'A1',
+                    createdAt: new Date().toISOString()
+                };
+
+                users.push(newUser);
+                localStorage.setItem('qazstep_users', JSON.stringify(users));
+
+                // Автоматический вход
+                localStorage.setItem('qazstep_session', JSON.stringify(newUser));
+
+                // Добавляем действие в историю
+                await QazStepAPI.addRecentAction(`Зарегистрирован новый пользователь: ${name}`, 'user');
+
+                showNotification('Регистрация успешна!', 'success');
+
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            }
+        });
+    }
+
+    // Функция для отображения уведомлений
+    function showNotification(message, type = 'info') {
+        const container = document.getElementById('notificationContainer');
+        if (!container) return;
+
+        // Удаляем старые уведомления
+        const oldNotifications = container.querySelectorAll('.notification');
+        oldNotifications.forEach(n => n.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+
+        let iconClass = 'fa-info-circle';
+        if (type === 'success') iconClass = 'fa-check-circle';
+        if (type === 'error') iconClass = 'fa-exclamation-circle';
+        if (type === 'warning') iconClass = 'fa-exclamation-triangle';
+
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${iconClass}"></i>
+                <span>${message}</span>
+            </div>
+            <button class="notification-close">&times;</button>
+        `;
+
+        container.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        });
+    }
+    </script>
+</body>
+</html>

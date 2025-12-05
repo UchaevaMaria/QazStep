@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уроки казахского языка — QazStep</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .lessons-page {
+            padding: 40px 0;
+            min-height: 80vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            color: var(--color-primary);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .page-header p {
+            color: var(--color-text);
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .progress-section {
+            margin-bottom: 40px;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-soft);
+            text-align: center;
+            border-top: 4px solid var(--color-primary);
+            max-width: 600px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .progress-card h3 {
+            color: var(--color-primary);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(40, 65, 109, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            border-radius: 10px;
+            transition: width 1s ease;
+            width: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 20px 20px;
+            animation: progress-shimmer 2s linear infinite;
+        }
+
+        .progress-bar.small {
+            height: 8px;
+            margin: 0 10px 0 0;
+            flex: 1;
+        }
+
+        .lessons-section {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow-soft);
+            margin-top: 30px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        .lessons-section h2 {
+            color: var(--color-primary);
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .lessons-section > p {
+            color: var(--color-text);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .lessons-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .lesson-item {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px;
+            background: var(--color-light);
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--color-primary);
+            transition: all var(--transition-base);
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .lesson-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+
+        .lesson-item:hover::before {
+            left: 100%;
+        }
+
+        .lesson-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(40, 65, 109, 0.15);
+            background: linear-gradient(135deg, #ffffff 0%, #f0f5ff 100%);
+            border-left: 4px solid var(--color-secondary);
+        }
+
+        .lesson-item:hover .lesson-number {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(40, 65, 109, 0.2);
+        }
+
+        .lesson-item:hover h3 {
+            color: var(--color-secondary);
+        }
+
+        .lesson-item.locked {
+            opacity: 0.7;
+            border-left-color: #ccc;
+            background: rgba(121, 135, 148, 0.1);
+            cursor: not-allowed;
+        }
+
+        .lesson-item.locked:hover {
+            transform: none;
+            box-shadow: none;
+            background: rgba(121, 135, 148, 0.1);
+            border-left-color: #ccc;
+        }
+
+        .lesson-item.completed {
+            border-left-color: var(--color-success);
+            background: rgba(97, 139, 104, 0.05);
+        }
+
+        .lesson-item.completed:hover {
+            background: linear-gradient(135deg, rgba(97, 139, 104, 0.05) 0%, rgba(97, 139, 104, 0.1) 100%);
+            border-left-color: var(--color-success);
+        }
+
+        .lesson-item.completed::before {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            background: var(--color-success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .lesson-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            flex-shrink: 0;
+            transition: all var(--transition-base);
+            box-shadow: 0 4px 10px rgba(40, 65, 109, 0.2);
+        }
+
+        .lesson-item.completed .lesson-number {
+            background: linear-gradient(135deg, var(--color-success), #4caf50);
+        }
+
+        .lesson-item.locked .lesson-number {
+            background: linear-gradient(135deg, #ccc, #999);
+            box-shadow: none;
+        }
+
+        .lesson-content {
+            flex: 1;
+        }
+
+        .lesson-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .lesson-header h3 {
+            color: var(--color-primary);
+            margin: 0;
+            font-size: 1.3rem;
+            transition: color var(--transition-base);
+        }
+
+        .lesson-level {
+            background: rgba(40, 65, 109, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--color-primary);
+            transition: all var(--transition-base);
+        }
+
+        .lesson-item:hover .lesson-level {
+            background: rgba(69, 104, 163, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .level-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: all var(--transition-base);
+        }
+
+        .level-a1 {
+            background: #e3f2fd;
+            color: #1976d2;
+            box-shadow: 0 2px 5px rgba(25, 118, 210, 0.1);
+        }
+        .level-a2 {
+            background: #e8f5e9;
+            color: #388e3c;
+            box-shadow: 0 2px 5px rgba(56, 142, 60, 0.1);
+        }
+        .level-b1 {
+            background: #fff3e0;
+            color: #f57c00;
+            box-shadow: 0 2px 5px rgba(245, 124, 0, 0.1);
+        }
+        .level-b2 {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            box-shadow: 0 2px 5px rgba(123, 31, 162, 0.1);
+        }
+
+        .lesson-item:hover .level-a1 {
+            background: #bbdefb;
+            box-shadow: 0 3px 8px rgba(25, 118, 210, 0.2);
+        }
+        .lesson-item:hover .level-a2 {
+            background: #c8e6c9;
+            box-shadow: 0 3px 8px rgba(56, 142, 60, 0.2);
+        }
+        .lesson-item:hover .level-b1 {
+            background: #ffe0b2;
+            box-shadow: 0 3px 8px rgba(245, 124, 0, 0.2);
+        }
+        .lesson-item:hover .level-b2 {
+            background: #e1bee7;
+            box-shadow: 0 3px 8px rgba(123, 31, 162, 0.2);
+        }
+
+        .lesson-desc {
+            color: var(--color-text);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .lesson-meta {
+            display: flex;
+            gap: 20px;
+            color: var(--color-text);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .lesson-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all var(--transition-base);
+        }
+
+        .lesson-item:hover .lesson-meta span {
+            color: var(--color-secondary);
+        }
+
+        .lesson-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .lesson-progress span {
+            font-size: 0.9rem;
+            color: var(--color-primary);
+            font-weight: 600;
+            min-width: 40px;
+            transition: color var(--transition-base);
+        }
+
+        .lesson-item:hover .lesson-progress span {
+            color: var(--color-secondary);
+        }
+
+        .lesson-actions {
+            flex-shrink: 0;
+        }
+
+        .lesson-actions .btn {
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lesson-actions .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+        }
+
+        .lesson-item:hover .lesson-actions .btn::before {
+            left: 100%;
+        }
+
+        .media-preview {
+            margin: 10px 0;
+            max-width: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform var(--transition-base);
+        }
+
+        .lesson-item:hover .media-preview {
+            transform: scale(1.02);
+        }
+
+        .media-preview img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .media-preview video {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-text);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: block;
+            color: var(--color-primary);
+            animation: spin 1s linear infinite;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--color-text);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+            color: rgba(121, 135, 148, 0.3);
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        @keyframes progress-shimmer {
+            0% {
+                background-position: -20px 0;
+            }
+            100% {
+                background-position: 0 0;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .lesson-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .lesson-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .lesson-actions {
+                width: 100%;
+            }
+
+            .lesson-actions .btn {
+                width: 100%;
+            }
+
+            .lessons-section {
+                padding: 25px;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .progress-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .lesson-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .lesson-item {
+                padding: 20px;
+            }
+
+            .lessons-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body data-page="lessons">
+    <!-- Уведомления -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <header class="site-header">
+        <div class="container header__content">
+            <a class="logo" href="index.html">QazStep</a>
+            <nav class="primary-nav" aria-label="Главное меню">
+                <ul class="nav-list">
+                    <li><a class="nav-link is-active" href="lessons.html">Уроки</a></li>
+                    <li><a class="nav-link" href="theory.html">Теория</a></li>
+                    <li><a class="nav-link" href="dictionary.html">Словарь</a></li>
+                    <li><a class="nav-link" href="admin-dashboard.html">Админ</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons" id="authButtons">
+                <!-- JS загрузит -->
+            </div>
+            <button class="hamburger" aria-label="Открыть меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="lessons-page">
+        <div class="container">
+            <!-- Заголовок -->
+            <div class="page-header">
+                <h1><i class="fa-solid fa-graduation-cap"></i> Уроки казахского языка</h1>
+                <p>Начни с первого урока и двигайся по порядку. Каждый урок открывает доступ к следующему.</p>
+            </div>
+
+            <!-- Прогресс -->
+            <div class="progress-section">
+                <div class="progress-card">
+                    <h3>Ваш прогресс</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="userProgress"></div>
+                    </div>
+                    <p id="progressText">0% уроков завершено</p>
+                </div>
+            </div>
+
+            <!-- Список уроков -->
+            <div class="lessons-section">
+                <h2><i class="fa-solid fa-list-ol"></i> Все уроки</h2>
+                <p>Уроки расположены от простого к сложному. Заверши один, чтобы открыть следующий.</p>
+
+                <div class="lessons-list" id="lessonsList">
+                    <!-- Уроки загружаются через JS -->
+                    <div class="loading">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <p>Загрузка уроков...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer__inner">
+            <div class="footer__brand">
+                <a class="logo" href="index.html">QazStep</a>
+                <p>Шаг за шагом к свободному владению казахским языком.</p>
+                <div class="footer__socials">
+                    <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+                </div>
+            </div>
+            <div class="footer__links">
+                <h4>Навигация</h4>
+                <ul>
+                    <li><a href="lessons.html">Уроки</a></li>
+                    <li><a href="theory.html">Теория</a></li>
+                    <li><a href="dictionary.html">Словарь</a></li>
+                    <li><a href="admin-dashboard.html">Админ-панель</a></li>
+                </ul>
+            </div>
+            <div class="footer__contacts">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><i class="fa-solid fa-envelope"></i> <a href="mailto:hello@qazstep.kz">hello@qazstep.kz</a></li>
+                    <li><i class="fa-solid fa-location-dot"></i> Казахстан</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <p>© 2024 QazStep. Шаг за шагом к знаниям.</p>
+        </div>
+    </footer>
+
+    <script>
+    // ====================
+    // API ДЛЯ РАБОТЫ С СЕРВЕРОМ
+    // ====================
+    const API_URL = 'http://localhost:3000/api';
+
+    class QazStepAPI {
+        // 📌 Проверка соединения
+        static async checkConnection() {
+            try {
+                const response = await fetch(`${API_URL}/status`);
+                return response.ok;
+            } catch {
+                return false;
+            }
+        }
+
+        // 📌 Уроки
+        static async getLessons() {
+            try {
+                const response = await fetch(`${API_URL}/lessons`);
+                if (!response.ok) throw new Error('Ошибка загрузки уроков');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки уроков:', error);
+                return JSON.parse(localStorage.getItem('qazstep_lessons') || '[]');
+            }
+        }
+
+        static async saveLesson(lesson) {
+            try {
+                const method = lesson.id ? 'PUT' : 'POST';
+                const url = lesson.id ? `${API_URL}/lessons/${lesson.id}` : `${API_URL}/lessons`;
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(lesson)
+                });
+
+                if (!response.ok) throw new Error('Ошибка сохранения урока');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка сохранения урока:', error);
+                // Сохраняем локально
+                const lessons = JSON.parse(localStorage.getItem('qazstep_lessons') || '[]');
+                if (lesson.id) {
+                    const index = lessons.findIndex(l => l.id === lesson.id);
+                    if (index !== -1) {
+                        lessons[index] = lesson;
+                    }
+                } else {
+                    lessons.push(lesson);
+                }
+                localStorage.setItem('qazstep_lessons', JSON.stringify(lessons));
+                return lesson;
+            }
+        }
+
+        // 📌 Пользователи
+        static async getUsers() {
+            try {
+                const response = await fetch(`${API_URL}/users`);
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки пользователей:', error);
+                return JSON.parse(localStorage.getItem('qazstep_users') || '[]');
+            }
+        }
+
+        static async login(credentials) {
+            try {
+                const response = await fetch(`${API_URL}/users/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(credentials)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка входа:', error);
+                throw error;
+            }
+        }
+
+        // 📌 Медиафайлы (пока локально)
+        static async getUploadedFiles() {
+            return JSON.parse(localStorage.getItem('qazstep_uploadedFiles') || '[]');
+        }
+
+        static async saveUploadedFile(fileData) {
+            const files = JSON.parse(localStorage.getItem('qazstep_uploadedFiles') || '[]');
+            files.push(fileData);
+            localStorage.setItem('qazstep_uploadedFiles', JSON.stringify(files));
+            return fileData;
+        }
+
+        // 📌 История действий
+        static async getRecentActions() {
+            return JSON.parse(localStorage.getItem('qazstep_recentActions') || '[]');
+        }
+
+        static async addRecentAction(action, type = 'system') {
+            const actions = JSON.parse(localStorage.getItem('qazstep_recentActions') || '[]');
+            const user = JSON.parse(localStorage.getItem('qazstep_session'));
+
+            const newAction = {
+                id: Date.now(),
+                action: action,
+                type: type,
+                user: user ? user.name : 'system',
+                timestamp: new Date().toISOString(),
+                time: new Date().toLocaleTimeString('ru-RU')
+            };
+
+            actions.unshift(newAction);
+            if (actions.length > 50) {
+                actions.pop();
+            }
+
+            localStorage.setItem('qazstep_recentActions', JSON.stringify(actions));
+            return newAction;
+        }
+    }
+
+    // ====================
+    // ОСНОВНОЙ СКРИПТ ДЛЯ СТРАНИЦЫ УРОКОВ
+    // ====================
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        console.log("Страница уроков загружена");
+
+        // Инициализация
+        await initDatabase();
+        updateAuthUI();
+        setupHamburgerMenu();
+
+        // Загрузка уроков
+        await loadLessonsPage();
+    });
+
+    async function initDatabase() {
+        console.log("Инициализация базы данных...");
+
+        try {
+            // Проверяем соединение с сервером
+            const isConnected = await QazStepAPI.checkConnection();
+            console.log("Соединение с сервером:", isConnected ? "✓ Установлено" : "✗ Нет связи");
+
+            if (isConnected) {
+                // Загружаем данные с сервера
+                const [users, lessons] = await Promise.all([
+                    QazStepAPI.getUsers(),
+                    QazStepAPI.getLessons()
+                ]);
+
+                // Сохраняем в localStorage как кэш
+                localStorage.setItem('qazstep_users', JSON.stringify(users));
+                localStorage.setItem('qazstep_lessons', JSON.stringify(lessons));
+
+                console.log(`Загружено с сервера: ${users.length} пользователей, ${lessons.length} уроков`);
+            } else {
+                console.log('Работаем в автономном режиме (localStorage)');
+                initLocalStorage();
+            }
+        } catch (error) {
+            console.error('Ошибка при загрузке с сервера:', error);
+            initLocalStorage();
+        }
+    }
+
+    function initLocalStorage() {
+        // Если нет пользователей - инициализируем пустой массив
+        if (!localStorage.getItem('qazstep_users')) {
+            console.log("Инициализируем базу пользователей");
+            localStorage.setItem('qazstep_users', JSON.stringify([]));
+        }
+
+        // Если нет уроков - инициализируем пустой массив
+        if (!localStorage.getItem('qazstep_lessons')) {
+            console.log("Инициализируем базу уроков");
+            localStorage.setItem('qazstep_lessons', JSON.stringify([]));
+        }
+
+        // Если нет загруженных файлов - инициализируем
+        if (!localStorage.getItem('qazstep_uploadedFiles')) {
+            localStorage.setItem('qazstep_uploadedFiles', JSON.stringify([]));
+        }
+
+        // Если нет действий - инициализируем
+        if (!localStorage.getItem('qazstep_recentActions')) {
+            localStorage.setItem('qazstep_recentActions', JSON.stringify([]));
+        }
+    }
+
+    async function loadLessonsPage() {
+        const container = document.getElementById('lessonsList');
+        if (!container) return;
+
+        try {
+            // Пробуем загрузить с сервера
+            const lessons = await QazStepAPI.getLessons();
+
+            console.log("Найдено уроков:", lessons.length);
+
+            // Сортируем по порядку
+            lessons.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+            if (lessons.length === 0) {
+                const session = localStorage.getItem('qazstep_session');
+                let user = null;
+
+                if (session) {
+                    try {
+                        user = JSON.parse(session);
+                    } catch (e) {
+                        console.error("Ошибка при парсинге сессии:", e);
+                    }
+                }
+
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-book-open"></i>
+                        <p>Уроки пока не добавлены</p>
+                        ${user && user.role === 'admin' ?
+                            '<a href="admin-dashboard.html" class="btn btn--primary">Добавить уроки</a>' :
+                            '<p>Обратитесь к администратору для добавления уроков</p>'}
+                    </div>
+                `;
+                updateProgress(0, 0);
+                return;
+            }
+
+            let html = '';
+            let completed = 0;
+
+            // Загружаем медиафайлы
+            const uploadedFiles = await QazStepAPI.getUploadedFiles();
+
+            lessons.forEach((lesson, index) => {
+                const isCompleted = lesson.progress === 100;
+                const isUnlocked = index === 0 || (lessons[index - 1] && lessons[index - 1].progress === 100);
+
+                if (isCompleted) completed++;
+
+                // Получаем медиафайл урока
+                const mediaFile = lesson.mediaFileId ? uploadedFiles.find(f => f.id.toString() === lesson.mediaFileId.toString()) : null;
+                const hasMedia = mediaFile && (mediaFile.type === 'image' || mediaFile.type === 'video');
+
+                // Определяем иконку для типа урока
+                let lessonIcon = 'fa-book';
+                if (lesson.type === 'video') lessonIcon = 'fa-video';
+                if (lesson.type === 'audio') lessonIcon = 'fa-volume-high';
+                if (lesson.type === 'practice') lessonIcon = 'fa-pen-to-square';
+
+                html += `
+                    <div class="lesson-item ${!isUnlocked ? 'locked' : ''} ${isCompleted ? 'completed' : ''}">
+                        <div class="lesson-number">${index + 1}</div>
+                        <div class="lesson-content">
+                            <div class="lesson-header">
+                                <h3>${lesson.title}</h3>
+                                <span class="level-badge level-${lesson.level.toLowerCase()}">${lesson.level}</span>
+                            </div>
+                            <p class="lesson-desc">${lesson.description}</p>
+
+                            ${hasMedia ? `
+                                <div class="media-preview">
+                                    ${mediaFile.type === 'image' ?
+                                        `<img src="${mediaFile.dataUrl}" alt="${mediaFile.name}" loading="lazy">` :
+                                        `<video controls style="max-width: 100%;">
+                                            <source src="${mediaFile.dataUrl}" type="video/mp4">
+                                        </video>`
+                                    }
+                                </div>
+                            ` : ''}
+
+                            <div class="lesson-meta">
+                                <span><i class="fa-solid fa-clock"></i> ${lesson.duration || '15 мин'}</span>
+                                <span><i class="fa-solid ${lessonIcon}"></i> ${getLessonTypeName(lesson.type)}</span>
+                                ${lesson.questions ? `<span><i class="fa-solid fa-question-circle"></i> ${lesson.questions.length} вопросов</span>` : ''}
+                            </div>
+                            ${lesson.progress > 0 ? `
+                                <div class="lesson-progress">
+                                    <div class="progress-bar small">
+                                        <div class="progress-fill" style="width: ${lesson.progress}%"></div>
+                                    </div>
+                                    <span>${lesson.progress}%</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="lesson-actions">
+                            ${isUnlocked ? `
+                                <a href="lesson-view.html?id=${lesson.id}" class="btn btn--primary">
+                                    ${lesson.progress > 0 ? 'Продолжить' : 'Начать'}
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </a>
+                            ` : `
+                                <button class="btn btn--secondary" disabled>
+                                    <i class="fa-solid fa-lock"></i>
+                                    Заверши предыдущий урок
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            // Обновляем прогресс
+            updateProgress(completed, lessons.length);
+
+            // Анимируем прогресс бар
+            setTimeout(() => {
+                const progressFill = document.getElementById('userProgress');
+                const progressPercent = lessons.length > 0 ? Math.round((completed / lessons.length) * 100) : 0;
+                if (progressFill) {
+                    progressFill.style.width = progressPercent + '%';
+                }
+            }, 100);
+
+        } catch (error) {
+            console.error('Ошибка загрузки уроков:', error);
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <p>Ошибка загрузки уроков</p>
+                    <p style="font-size: 0.9rem; color: #666;">${error.message}</p>
+                </div>
+            `;
+        }
+    }
+
+    function updateProgress(completed, total) {
+        const progressPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
+        const progressText = document.getElementById('progressText');
+
+        if (progressText) {
+            progressText.textContent = `${progressPercent}% уроков завершено (${completed}/${total})`;
+        }
+    }
+
+    function getLessonTypeName(type) {
+        const types = {
+            'video': 'Видео',
+            'audio': 'Аудио',
+            'theory': 'Теория',
+            'practice': 'Практика'
+        };
+        return types[type] || type;
+    }
+
+    // Функция для отображения уведомлений
+    function showNotification(message, type = 'info') {
+        const container = document.getElementById('notificationContainer');
+        if (!container) return;
+
+        // Удаляем старые уведомления
+        const oldNotifications = container.querySelectorAll('.notification');
+        oldNotifications.forEach(n => n.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+
+        let iconClass = 'fa-info-circle';
+        if (type === 'success') iconClass = 'fa-check-circle';
+        if (type === 'error') iconClass = 'fa-exclamation-circle';
+        if (type === 'warning') iconClass = 'fa-exclamation-triangle';
+
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${iconClass}"></i>
+                <span>${message}</span>
+            </div>
+            <button class="notification-close">&times;</button>
+        `;
+
+        container.appendChild(notification);
+
+        // Автоматическое закрытие через 5 секунд
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+
+        // Закрытие по клику на крестик
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        });
+    }
+
+    // Функция обновления UI авторизации
+    function updateAuthUI() {
+        const authButtons = document.getElementById('authButtons');
+        if (!authButtons) return;
+
+        const session = localStorage.getItem('qazstep_session');
+        let user = null;
+
+        if (session) {
+            try {
+                user = JSON.parse(session);
+            } catch (e) {
+                console.error("Ошибка при парсинге сессии:", e);
+            }
+        }
+
+        if (user) {
+            authButtons.innerHTML = `
+                <div class="user-menu">
+                    <span class="user-greeting">
+                        <i class="fa-solid fa-user"></i>
+                        ${user.name}
+                    </span>
+                    <button onclick="logout()" class="btn btn--small btn--secondary">
+                        Выйти
+                    </button>
+                </div>
+            `;
+        } else {
+            authButtons.innerHTML = `
+                <div class="auth-buttons">
+                    <a href="login.html" class="btn btn--secondary btn--small">
+                        Вход
+                    </a>
+                    <a href="register.html" class="btn btn--primary btn--small">
+                        Регистрация
+                    </a>
+                </div>
+            `;
+        }
+    }
+
+    // Функция выхода
+    async function logout() {
+        const session = localStorage.getItem('qazstep_session');
+        let user = null;
+
+        if (session) {
+            try {
+                user = JSON.parse(session);
+            } catch (e) {
+                console.error("Ошибка при парсинге сессии:", e);
+            }
+        }
+
+        if (user) {
+            await QazStepAPI.addRecentAction(`Пользователь ${user.name} вышел из системы`, 'user');
+        }
+        localStorage.removeItem('qazstep_session');
+        showNotification('Вы вышли из системы', 'success');
+        setTimeout(() => {
+            updateAuthUI();
+            window.location.href = 'index.html';
+        }, 1000);
+    }
+
+    // Функция добавления действия в историю
+    async function addRecentAction(action, type = 'system') {
+        try {
+            await QazStepAPI.addRecentAction(action, type);
+        } catch (error) {
+            console.error('Ошибка добавления действия:', error);
+            // Локальное сохранение в случае ошибки
+            const actions = JSON.parse(localStorage.getItem('qazstep_recentActions') || '[]');
+            const user = JSON.parse(localStorage.getItem('qazstep_session') || 'null');
+
+            const newAction = {
+                id: Date.now(),
+                action: action,
+                type: type,
+                user: user ? user.name : 'system',
+                timestamp: new Date().toISOString(),
+                time: new Date().toLocaleTimeString('ru-RU')
+            };
+
+            actions.unshift(newAction);
+            if (actions.length > 50) {
+                actions.pop();
+            }
+
+            localStorage.setItem('qazstep_recentActions', JSON.stringify(actions));
+        }
+    }
+
+    // Инициализация меню
+    function setupHamburgerMenu() {
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('.primary-nav');
+
+        if (hamburger && nav) {
+            hamburger.addEventListener('click', () => {
+                nav.classList.toggle('show');
+                hamburger.classList.toggle('is-active');
+            });
+
+            // Закрытие меню при клике на ссылку
+            nav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    nav.classList.remove('show');
+                    hamburger.classList.remove('is-active');
+                });
+            });
+        }
+    }
+
+    // Глобальные функции
+    window.logout = logout;
+    </script>
+</body>
+</html>

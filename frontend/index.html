@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QazStep — Изучение казахского языка</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Dictionary Preview Styles */
+        .dictionary-preview {
+            padding: 80px 0;
+            background: var(--color-light);
+        }
+
+        .preview-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            transition: transform var(--transition-base);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-card i {
+            font-size: 2.5rem;
+            color: var(--color-primary);
+            margin-bottom: 15px;
+        }
+
+        .category-card h3 {
+            color: var(--color-primary);
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .category-card p {
+            color: var(--color-text);
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .category-card .btn {
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body data-page="landing">
+    <!-- Уведомления -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <header class="site-header">
+        <div class="container header__content">
+            <a class="logo" href="index.html">QazStep</a>
+            <nav class="primary-nav" aria-label="Главное меню">
+                <ul class="nav-list">
+                    <li><a class="nav-link" href="lessons.html">Уроки</a></li>
+                    <li><a class="nav-link" href="theory.html">Теория</a></li>
+                    <li><a class="nav-link" href="dictionary.html">Словарь</a></li>
+                    <li><a class="nav-link" href="admin-dashboard.html">Админ</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons" id="authButtons">
+                <!-- Заполняется через JavaScript -->
+            </div>
+            <button class="hamburger" aria-label="Открыть меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero__decor hero__decor--one"></div>
+            <div class="hero__decor hero__decor--two"></div>
+            <div class="container hero__glass">
+                <span class="hero__badge badge">
+                    <i class="fa-solid fa-sparkles"></i>
+                    Изучай казахский шаг за шагом
+                </span>
+                <div class="hero__grid">
+                    <div class="hero__content">
+                        <p class="hero__eyebrow">Казахский язык для уровней A1–B2</p>
+                        <h1>Казахский язык: от слов к свободе общения</h1>
+                        <p class="hero__description">
+                            Пошаговые уроки от простого к сложному. Начни с основ и постепенно переходи к свободному общению.
+                        </p>
+                        <div class="hero__actions">
+                            <a href="lessons.html" class="btn btn--primary">
+                                <span>Начать обучение</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                            <a href="theory.html" class="btn btn--secondary">
+                                <i class="fa-solid fa-book"></i>
+                                <span>Теория</span>
+                            </a>
+                        </div>
+                        <ul class="hero__meta" aria-label="Основные преимущества">
+                            <li>
+                                <strong>Пошагово</strong>
+                                От A1 до B2
+                            </li>
+                            <li>
+                                <strong>Практика</strong>
+                                Интерактивные задания
+                            </li>
+                            <li>
+                                <strong>Прогресс</strong>
+                                Отслеживание результатов
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="hero__visual">
+                        <div class="hero-illustration">
+                            <div class="hero-illustration__shape hero-illustration__shape--primary"></div>
+                            <div class="hero-illustration__shape hero-illustration__shape--secondary"></div>
+                            <div class="hero-illustration__card card card--glass card--levels">
+                                <p>Ваш прогресс</p>
+                                <div class="progress">
+                                    <div class="progress__fill" id="overallProgress"></div>
+                                </div>
+                                <p id="progressText">0% завершено</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lessons Section -->
+        <section class="preview-lessons" id="lessons">
+            <div class="container preview-lessons__inner">
+                <div class="section-header preview-lessons__header">
+                    <p class="section-header__eyebrow">Пошаговые уроки</p>
+                    <h2>Начните с первого урока и двигайтесь дальше</h2>
+                    <p class="section-header__subtitle">Все уроки расположены в порядке от простого к сложному</p>
+                </div>
+
+                <div class="lessons-sequence" id="lessonsSequence">
+                    <!-- Уроки загружаются динамически через JS -->
+                    <div class="loading-lessons">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        <p>Загрузка уроков...</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="lessons.html" class="btn btn--secondary">
+                        <i class="fa-solid fa-list"></i>
+                        Все уроки
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Theory Section -->
+        <section class="theory-section" id="theory">
+            <div class="container">
+                <div class="section-header">
+                    <p class="section-header__eyebrow">Справочные материалы</p>
+                    <h2>Теория для закрепления</h2>
+                    <p class="section-header__subtitle">Изучайте грамматику и лексику параллельно с уроками</p>
+                </div>
+
+                <div class="theory-grid" id="theoryGrid">
+                    <!-- Теории загружаются динамически -->
+                    <div class="loading-theories">
+                        <i class="fa-solid fa-book-open"></i>
+                        <p>Загружаем теоретические материалы...</p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="theory.html" class="btn btn--primary">
+                        <i class="fa-solid fa-book"></i>
+                        Вся теория
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dictionary Section -->
+        <section class="dictionary-preview" id="dictionary">
+            <div class="container">
+                <div class="section-header">
+                    <p class="section-header__eyebrow">Словарь</p>
+                    <h2>Изучайте слова по темам</h2>
+                    <p class="section-header__subtitle">Более 1000 слов с примерами и озвучкой</p>
+                </div>
+
+                <div class="preview-categories">
+                    <div class="category-card">
+                        <i class="fa-solid fa-handshake"></i>
+                        <h3>Приветствия</h3>
+                        <p>50 слов</p>
+                        <a href="dictionary.html?category=greetings" class="btn btn--secondary">Изучить</a>
+                    </div>
+                    <div class="category-card">
+                        <i class="fa-solid fa-utensils"></i>
+                        <h3>Еда</h3>
+                        <p>120 слов</p>
+                        <a href="dictionary.html?category=food" class="btn btn--secondary">Изучить</a>
+                    </div>
+                    <div class="category-card">
+                        <i class="fa-solid fa-house"></i>
+                        <h3>Семья</h3>
+                        <p>80 слов</p>
+                        <a href="dictionary.html?category=family" class="btn btn--secondary">Изучить</a>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <a href="dictionary.html" class="btn btn--primary">
+                        <i class="fa-solid fa-book"></i>
+                        Весь словарь
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer__inner">
+            <div class="footer__brand">
+                <a class="logo" href="index.html">QazStep</a>
+                <p>Шаг за шагом к свободному владению казахским языком.</p>
+                <div class="footer__socials">
+                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#"><i class="fa-brands fa-telegram"></i></a>
+                </div>
+            </div>
+            <div class="footer__links">
+                <h4>Навигация</h4>
+                <ul>
+                    <li><a href="lessons.html">Уроки</a></li>
+                    <li><a href="theory.html">Теория</a></li>
+                    <li><a href="dictionary.html">Словарь</a></li>
+                    <li><a href="admin-dashboard.html">Админ-панель</a></li>
+                </ul>
+            </div>
+            <div class="footer__contacts">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><i class="fa-solid fa-envelope"></i> <a href="mailto:hello@qazstep.kz">hello@qazstep.kz</a></li>
+                    <li><i class="fa-solid fa-location-dot"></i> Казахстан</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <p>© 2024 QazStep. Шаг за шагом к знаниям.</p>
+        </div>
+    </footer>
+
+    <script>
+    // ====================
+    // API ДЛЯ РАБОТЫ С СЕРВЕРОМ
+    // ====================
+    const API_URL = 'http://localhost:3000/api';
+
+    class QazStepAPI {
+        // 📌 Проверка соединения
+        static async checkConnection() {
+            try {
+                const response = await fetch(`${API_URL}/status`);
+                return response.ok;
+            } catch {
+                return false;
+            }
+        }
+
+        // 📌 Уроки
+        static async getLessons() {
+            try {
+                const response = await fetch(`${API_URL}/lessons`);
+                if (!response.ok) throw new Error('Ошибка загрузки уроков');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки уроков:', error);
+                return JSON.parse(localStorage.getItem('qazstep_lessons') || '[]');
+            }
+        }
+
+        static async saveLesson(lesson) {
+            try {
+                const method = lesson.id ? 'PUT' : 'POST';
+                const url = lesson.id ? `${API_URL}/lessons/${lesson.id}` : `${API_URL}/lessons`;
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(lesson)
+                });
+
+                if (!response.ok) throw new Error('Ошибка сохранения урока');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка сохранения урока:', error);
+                // Сохраняем локально
+                const lessons = JSON.parse(localStorage.getItem('qazstep_lessons') || '[]');
+                if (lesson.id) {
+                    const index = lessons.findIndex(l => l.id === lesson.id);
+                    if (index !== -1) {
+                        lessons[index] = lesson;
+                    }
+                } else {
+                    lessons.push(lesson);
+                }
+                localStorage.setItem('qazstep_lessons', JSON.stringify(lessons));
+                return lesson;
+            }
+        }
+
+        // 📌 Теории
+        static async getTheories() {
+            try {
+                const response = await fetch(`${API_URL}/theories`);
+                if (!response.ok) throw new Error('Ошибка загрузки теорий');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки теорий:', error);
+                return JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+            }
+        }
+
+        static async saveTheory(theory) {
+            try {
+                const method = theory.id ? 'PUT' : 'POST';
+                const url = theory.id ? `${API_URL}/theories/${theory.id}` : `${API_URL}/theories`;
+
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(theory)
+                });
+
+                if (!response.ok) throw new Error('Ошибка сохранения теории');
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка сохранения теории:', error);
+                // Сохраняем локально
+                const theories = JSON.parse(localStorage.getItem('qazstep_theories') || '[]');
+                if (theory.id) {
+                    const index = theories.findIndex(t => t.id === theory.id);
+                    if (index !== -1) {
+                        theories[index] = theory;
+                    }
+                } else {
+                    theories.push(theory);
+                }
+                localStorage.setItem('qazstep_theories', JSON.stringify(theories));
+                return theory;
+            }
+        }
+
+        // 📌 Пользователи
+        static async getUsers() {
+            try {
+                const response = await fetch(`${API_URL}/users`);
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка загрузки пользователей:', error);
+                return JSON.parse(localStorage.getItem('qazstep_users') || '[]');
+            }
+        }
+
+        static async login(credentials) {
+            try {
+                const response = await fetch(`${API_URL}/users/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(credentials)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Ошибка входа:', error);
+                throw error;
+            }
+        }
+
+        // 📌 Медиафайлы (пока локально)
+        static async getUploadedFiles() {
+            return JSON.parse(localStorage.getItem('qazstep_uploadedFiles') || '[]');
+        }
+
+        // 📌 История действий
+        static async addRecentAction(action, type = 'system') {
+            const actions = JSON.parse(localStorage.getItem('qazstep_recentActions') || '[]');
+            const user = JSON.parse(localStorage.getItem('qazstep_session'));
+
+            const newAction = {
+                id: Date.now(),
+                action: action,
+                type: type,
+                user: user ? user.name : 'system',
+                timestamp: new Date().toISOString(),
+                time: new Date().toLocaleTimeString('ru-RU')
+            };
+
+            actions.unshift(newAction);
+            if (actions.length > 50) {
+                actions.pop();
+            }
+
+            localStorage.setItem('qazstep_recentActions', JSON.stringify(actions));
+            return newAction;
+        }
+    }
+
+    // ====================
+    // ОСНОВНОЙ СКРИПТ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ
+    // ====================
+
+    document.addEventListener("DOMContentLoaded", async function() {
+        console.log("Главная страница загружена");
+
+        // Инициализация
+        await initDatabase();
+        updateAuthUI();
+        setupHamburgerMenu();
+
+        // Загрузка данных
+        await loadLessonsForHome();
+        await loadTheoriesForHome();
+        await updateProgress();
+    });
+
+    async function initDatabase() {
+        console.log("Инициализация базы данных...");
+
+        try {
+            // Проверяем соединение с сервером
+            const isConnected = await QazStepAPI.checkConnection();
+            console.log("Соединение с сервером:", isConnected ? "✓ Установлено" : "✗ Нет связи");
+
+            if (isConnected) {
+                // Загружаем данные с сервера
+                const [users, lessons, theories] = await Promise.all([
+                    QazStepAPI.getUsers(),
+                    QazStepAPI.getLessons(),
+                    QazStepAPI.getTheories()
+                ]);
+
+                // Сохраняем в localStorage как кэш
+                localStorage.setItem('qazstep_users', JSON.stringify(users));
+                localStorage.setItem('qazstep_lessons', JSON.stringify(lessons));
+                localStorage.setItem('qazstep_theories', JSON.stringify(theories));
+
+                console.log(`Загружено с сервера: ${users.length} пользователей, ${lessons.length} уроков, ${theories.length} теорий`);
+            } else {
+                console.log('Работаем в автономном режиме (localStorage)');
+                initLocalStorage();
+            }
+        } catch (error) {
+            console.error('Ошибка при загрузке с сервера:', error);
+            initLocalStorage();
+        }
+    }
+
+    function initLocalStorage() {
+        // Если нет пользователей - инициализируем пустой массив
+        if (!localStorage.getItem('qazstep_users')) {
+            console.log("Инициализируем базу пользователей");
+            localStorage.setItem('qazstep_users', JSON.stringify([]));
+        }
+
+        // Если нет уроков - инициализируем пустой массив
+        if (!localStorage.getItem('qazstep_lessons')) {
+            console.log("Инициализируем базу уроков");
+            localStorage.setItem('qazstep_lessons', JSON.stringify([]));
+        }
+
+        // Если нет теорий - инициализируем пустой массив
+        if (!localStorage.getItem('qazstep_theories')) {
+            console.log("Инициализируем базу теорий");
+            localStorage.setItem('qazstep_theories', JSON.stringify([]));
+        }
+
+        // Если нет загруженных файлов - инициализируем
+        if (!localStorage.getItem('qazstep_uploadedFiles')) {
+            localStorage.setItem('qazstep_uploadedFiles', JSON.stringify([]));
+        }
+
+        // Если нет действий - инициализируем
+        if (!localStorage.getItem('qazstep_recentActions')) {
+            localStorage.setItem('qazstep_recentActions', JSON.stringify([]));
+        }
+    }
+
+    // Функция обновления UI авторизации
+    function updateAuthUI() {
+        const authButtons = document.getElementById('authButtons');
+        if (!authButtons) return;
+
+        const session = localStorage.getItem('qazstep_session');
+        let user = null;
+
+        if (session) {
+            try {
+                user = JSON.parse(session);
+            } catch (e) {
+                console.error("Ошибка при парсинге сессии:", e);
+            }
+        }
+
+        if (user) {
+            authButtons.innerHTML = `
+                <div class="user-menu">
+                    <span class="user-greeting">
+                        <i class="fa-solid fa-user"></i>
+                        ${user.name}
+                    </span>
+                    <button onclick="logout()" class="btn btn--small btn--secondary">
+                        Выйти
+                    </button>
+                </div>
+            `;
+        } else {
+            authButtons.innerHTML = `
+                <div class="auth-buttons">
+                    <a href="login.html" class="btn btn--secondary btn--small">
+                        Вход
+                    </a>
+                    <a href="register.html" class="btn btn--primary btn--small">
+                        Регистрация
+                    </a>
+                </div>
+            `;
+        }
+    }
+
+    // Функция выхода
+    async function logout() {
+        const session = localStorage.getItem('qazstep_session');
+        let user = null;
+
+        if (session) {
+            try {
+                user = JSON.parse(session);
+            } catch (e) {
+                console.error("Ошибка при парсинге сессии:", e);
+            }
+        }
+
+        if (user) {
+            await QazStepAPI.addRecentAction(`Пользователь ${user.name} вышел из системы`, 'user');
+        }
+        localStorage.removeItem('qazstep_session');
+        showNotification('Вы вышли из системы', 'success');
+        setTimeout(() => {
+            updateAuthUI();
+            window.location.href = 'index.html';
+        }, 1000);
+    }
+
+    // Инициализация меню
+    function setupHamburgerMenu() {
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('.primary-nav');
+
+        if (hamburger && nav) {
+            hamburger.addEventListener('click', () => {
+                nav.classList.toggle('show');
+                hamburger.classList.toggle('is-active');
+            });
+
+            // Закрытие меню при клике на ссылку
+            nav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    nav.classList.remove('show');
+                    hamburger.classList.remove('is-active');
+                });
+            });
+        }
+    }
+
+    async function loadLessonsForHome() {
+        const container = document.getElementById('lessonsSequence');
+        if (!container) return;
+
+        try {
+            const lessons = await QazStepAPI.getLessons();
+
+            // Сортируем по порядку
+            lessons.sort((a, b) => a.order - b.order);
+
+            container.innerHTML = '';
+
+            if (lessons.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-book-open"></i>
+                        <p>Уроки пока не добавлены</p>
+                    </div>
+                `;
+                return;
+            }
+
+            lessons.slice(0, 3).forEach((lesson, index) => {
+                const card = document.createElement('div');
+                card.className = 'lesson-card card';
+                card.innerHTML = `
+                    <span class="badge level-badge level-${lesson.level.toLowerCase()}">${lesson.level}</span>
+                    <div class="lesson-card__type">${getLessonTypeName(lesson.type)}</div>
+                    <h3>${lesson.title}</h3>
+                    <p>${lesson.description}</p>
+                    ${lesson.mediaFileId ? `<div style="margin: 10px 0;">${getMediaPreview(lesson.mediaFileId)}</div>` : ''}
+                    <div class="progress">
+                        <div class="progress__fill" style="width: ${lesson.progress || 0}%"></div>
+                    </div>
+                    <a href="lesson-view.html?id=${lesson.id}" class="btn btn--primary">
+                        ${(lesson.progress || 0) > 0 ? 'Продолжить' : 'Начать'}
+                    </a>
+                `;
+                container.appendChild(card);
+            });
+        } catch (error) {
+            console.error('Ошибка загрузки уроков:', error);
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <p>Ошибка загрузки уроков</p>
+                </div>
+            `;
+        }
+    }
+
+    async function loadTheoriesForHome() {
+        const container = document.getElementById('theoryGrid');
+        if (!container) return;
+
+        try {
+            const theories = await QazStepAPI.getTheories();
+
+            container.innerHTML = '';
+
+            if (theories.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-book-open"></i>
+                        <p>Теории пока не добавлены</p>
+                    </div>
+                `;
+                return;
+            }
+
+            theories.slice(0, 4).forEach(theory => {
+                const card = document.createElement('div');
+                card.className = 'theory-card card';
+                card.innerHTML = `
+                    <div class="theory-card__icon">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                    <span class="badge level-badge level-${theory.level.toLowerCase()}">${theory.level}</span>
+                    <h3>${theory.title}</h3>
+                    ${theory.imageFileId ? `<div style="margin: 10px 0;">${getMediaPreview(theory.imageFileId)}</div>` : ''}
+                    <p class="theory-card__preview">${stripHtml(theory.content || '').substring(0, 100)}...</p>
+                    <div style="margin-top: 15px;">
+                        <button onclick="openTheory(${theory.id})" class="btn btn--secondary">
+                            <i class="fa-solid fa-book-open"></i> Открыть
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (error) {
+            console.error('Ошибка загрузки теорий:', error);
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <p>Ошибка загрузки теорий</p>
+                </div>
+            `;
+        }
+    }
+
+    async function updateProgress() {
+        try {
+            const lessons = await QazStepAPI.getLessons();
+            const progressBar = document.getElementById('overallProgress');
+            const progressText = document.getElementById('progressText');
+
+            if (!progressBar || !progressText) return;
+
+            if (lessons.length === 0) {
+                progressBar.style.width = '0%';
+                progressText.textContent = 'Нет уроков';
+                return;
+            }
+
+            const totalProgress = lessons.reduce((sum, lesson) => sum + (lesson.progress || 0), 0);
+            const averageProgress = Math.round(totalProgress / lessons.length);
+
+            progressBar.style.width = averageProgress + '%';
+            progressText.textContent = averageProgress + '% завершено';
+        } catch (error) {
+            console.error('Ошибка обновления прогресса:', error);
+        }
+    }
+
+    function getLessonTypeName(type) {
+        const types = {
+            'video': 'Видео',
+            'audio': 'Аудио',
+            'theory': 'Теория',
+            'practice': 'Практика'
+        };
+        return types[type] || type;
+    }
+
+    function stripHtml(html) {
+        if (!html) return '';
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || '';
+    }
+
+    async function getMediaPreview(fileId) {
+        if (!fileId) return '';
+
+        try {
+            const uploadedFiles = await QazStepAPI.getUploadedFiles();
+            const file = uploadedFiles.find(f => f.id.toString() === fileId.toString());
+
+            if (!file) return '';
+
+            if (file.type === 'image') {
+                return `<img src="${file.dataUrl}" alt="${file.name}" style="max-width: 100%; max-height: 150px; border-radius: 8px; object-fit: cover;">`;
+            } else if (file.type === 'video') {
+                return `<div style="background: var(--color-light); padding: 20px; border-radius: 8px; text-align: center;">
+                            <i class="fa-solid fa-video" style="font-size: 2rem; color: var(--color-primary); margin-bottom: 10px;"></i>
+                            <p style="color: var(--color-text); font-size: 0.9rem;">Видео: ${file.name}</p>
+                        </div>`;
+            }
+
+            return '';
+        } catch (error) {
+            console.error('Ошибка получения медиафайла:', error);
+            return '';
+        }
+    }
+
+    async function openTheory(id) {
+        try {
+            const theories = await QazStepAPI.getTheories();
+            const theory = theories.find(t => t.id === id);
+
+            if (!theory) {
+                showNotification('Теория не найдена', 'error');
+                return;
+            }
+
+            // Увеличиваем просмотры
+            theory.views = (theory.views || 0) + 1;
+            await QazStepAPI.saveTheory(theory);
+
+            // Получаем медиафайлы
+            const uploadedFiles = await QazStepAPI.getUploadedFiles();
+            const imageFile = theory.imageFileId ? uploadedFiles.find(f => f.id.toString() === theory.imageFileId.toString()) : null;
+            const mediaFile = theory.mediaFileId ? uploadedFiles.find(f => f.id.toString() === theory.mediaFileId.toString()) : null;
+
+            // Показываем модальное окно
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.id = `theoryModal-${id}`;
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>${theory.title}</h3>
+                        <button class="close-modal" onclick="closeModal('theoryModal-${id}')">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="theory-meta">
+                            <span class="badge level-badge level-${theory.level.toLowerCase()}">${theory.level}</span>
+                            <span><i class="fa-solid fa-eye"></i> ${theory.views || 0} просмотров</span>
+                        </div>
+                        ${imageFile ? `
+                            <div style="margin: 20px 0;">
+                                <img src="${imageFile.dataUrl}" alt="${imageFile.name}" style="max-width: 100%; border-radius: 12px; margin-bottom: 20px;">
+                            </div>
+                        ` : ''}
+                        ${mediaFile && mediaFile !== imageFile ? `
+                            <div style="margin: 20px 0;">
+                                ${mediaFile.type === 'video' ?
+                                    `<video controls style="max-width: 100%; border-radius: 12px;">
+                                        <source src="${mediaFile.dataUrl}" type="video/mp4">
+                                        Ваш браузер не поддерживает видео.
+                                    </video>` :
+                                    `<img src="${mediaFile.dataUrl}" alt="${mediaFile.name}" style="max-width: 100%; border-radius: 12px;">`
+                                }
+                            </div>
+                        ` : ''}
+                        <div class="theory-content">
+                            ${theory.content || '<p>Содержание пока не добавлено</p>'}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn--secondary" onclick="closeModal('theoryModal-${id}')">Закрыть</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal(`theoryModal-${id}`);
+                }
+            });
+
+        } catch (error) {
+            console.error('Ошибка открытия теории:', error);
+            showNotification('Ошибка загрузки теории', 'error');
+        }
+    }
+
+    function showNotification(message, type = 'info') {
+        const container = document.getElementById('notificationContainer');
+        if (!container) return;
+
+        // Удаляем старые уведомления
+        const oldNotifications = container.querySelectorAll('.notification');
+        oldNotifications.forEach(n => n.remove());
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+
+        let iconClass = 'fa-info-circle';
+        if (type === 'success') iconClass = 'fa-check-circle';
+        if (type === 'error') iconClass = 'fa-exclamation-circle';
+        if (type === 'warning') iconClass = 'fa-exclamation-triangle';
+
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas ${iconClass}"></i>
+                <span>${message}</span>
+            </div>
+            <button class="notification-close">&times;</button>
+        `;
+
+        container.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }, 5000);
+
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        });
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // Глобальные функции
+    window.openTheory = openTheory;
+    window.closeModal = closeModal;
+    window.logout = logout;
+    </script>
+</body>
+</html>
